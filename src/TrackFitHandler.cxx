@@ -35,7 +35,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 	}
 
 	//3D fitting with all layers
-	std::cout<<"start 3D track fitting"<<std::endl;
+//	std::cout<<"start 3D track fitting"<<std::endl;
 	for(std::vector<std::map<unsigned int, CDCLineCandidate*>>::const_iterator linePair = pairs.begin(); linePair != pairs.end(); ++linePair){
 		CDCLineCandidate* lineOdd;
 		CDCLineCandidate* lineEven;
@@ -58,23 +58,23 @@ bool TrackFitHandler::IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* li
 	TVector3 posEven = lineEven->GetPos();
 	double dis = TVector3(posOdd - posEven).Mag();
 	double phiDiff = phiOdd - phiEven;
-	std::cout<<"phiOdd:phiEven "<<phiOdd<<":"<<phiEven<<" , phi difference is "<<phiDiff<<std::endl;
-	std::cout<<"posOdd:posEven "<<posOdd.X()<<","<<posOdd.Y()<<":"<<posEven.X()<<","<<posEven.Y()<<" distance is "
-		 <<dis<<std::endl;
+//	std::cout<<"phiOdd:phiEven "<<phiOdd<<":"<<phiEven<<" , phi difference is "<<phiDiff<<std::endl;
+//	std::cout<<"posOdd:posEven "<<posOdd.X()<<","<<posOdd.Y()<<":"<<posEven.X()<<","<<posEven.Y()<<" distance is "
+//		 <<dis<<std::endl;
 	//distance cut
 	if( dis > fMaxDistanceEO ){
-		std::cout<<"out of distance range"<<std::endl;
+//		std::cout<<"out of distance range"<<std::endl;
 		return false;
 	}
 	//angle difference cut
 	else if( !(phiDiff < fMaxPhiDiff && phiDiff > -fMaxPhiDiff)                            &&
 		 !(phiDiff < TMath::Pi() + fMaxPhiDiff && phiDiff > TMath::Pi() - fMaxPhiDiff) &&
 		 !(phiDiff < -TMath::Pi() + fMaxPhiDiff && phiDiff > -TMath::Pi() - fMaxPhiDiff)){
-		std::cout<<"out of angle range"<<std::endl;
+//		std::cout<<"out of angle range"<<std::endl;
 		return false;
 	}
 	else{
-		std::cout<<"return good pair"<<std::endl;
+//		std::cout<<"return good pair"<<std::endl;
 		return true;
 	}
 }
@@ -82,7 +82,9 @@ bool TrackFitHandler::IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* li
 CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven){
 	CDCLineCandidate* track = new CDCLineCandidate();
 
-	TVector3 pos = ( lineOdd->GetPos() + lineEven->GetPos() ) * 0.5;
+	TVector3 posOdd = lineOdd->GetPos();
+	TVector3 posEven = lineEven->GetPos();
+	TVector3 pos = ( posOdd + posEven) * 0.5;
 	TVector3 dirOdd = lineOdd->GetDir();
 	TVector3 dirEven = lineEven->GetDir();
 	double phiOdd = dirOdd.Phi();
@@ -90,34 +92,20 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 	double phiEven = dirEven.Phi();
 	if(phiEven < 0) phiEven += TMath::Pi();
 	double phi = (phiOdd + phiEven) / 2;
-	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
+//	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
 	//find x of bottum hit and top hit
-	std::map<double, double> y2xOdd;
-	std::map<double, double> y2xEven;
-	for(auto hitOdd = lineOdd->GetHits()->begin(); hitOdd != lineOdd->GetHits()->end(); ++hitOdd){
-		TVector2 posRO = CDCGeom::Get().ChannelToROPos( (*hitOdd)->GetChannelID() );
-		y2xOdd[posRO.Y()] = posRO.X();
-		//store this hit in track
-		track->AddHit(*hitOdd);
-	}
-	for(auto hitEven = lineEven->GetHits()->begin(); hitEven != lineEven->GetHits()->end(); ++hitEven){
-		TVector2 posRO = CDCGeom::Get().ChannelToROPos( (*hitEven)->GetChannelID() );
-		y2xEven[posRO.Y()] = posRO.X();
-		//store this hit in track
-		track->AddHit(*hitEven);
-	}
-	double xOddBottum = y2xOdd.begin()->second;
-	double xOddTop    = y2xOdd.rbegin()->second;
-	double xEvenBottum = y2xEven.begin()->second;
-	double xEvenTop    = y2xEven.rbegin()->second;
+	double xOddBottum = lineOdd->GetXAtY(-850.);
+	double xOddTop    = lineOdd->GetXAtY(850.);
+	double xEvenBottum = lineEven->GetXAtY(-850.);
+	double xEvenTop    = lineEven->GetXAtY(850.);
 	double cdcLength = CDCGeom::Get().GetCDCLength();
 	double projectZ = ((xOddBottum - xEvenBottum) - (xOddTop - xEvenTop)) / fMaxDistanceEO * cdcLength;
 	double theta;
 	if(projectZ == 0) theta = TMath::Pi() / 2;
 	theta = atan( 1750. / projectZ);
-	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
-	std::cout<<"theta "<<theta<<std::endl;
+//	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
+	std::cout<<"phi:theta "<<phi<<":"<<theta<<std::endl;
 
 	//Set track parameters
 	TVector3 dir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -125,9 +113,33 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 
 	double posZ = cdcLength / 2 - (xOddBottum - xEvenBottum + xOddTop - xEvenTop) / 2 / fMaxDistanceEO * cdcLength;
 	pos.SetZ(posZ);
-	std::cout<<"z position of track "<<posZ<<std::endl;
+	track->SetPos(pos);
+//	std::cout<<"z position of track "<<posZ<<std::endl;
 
-	return track;
+	//Store hits in track
+	for(auto hitOdd = lineOdd->GetHits()->begin(); hitOdd != lineOdd->GetHits()->end(); ++hitOdd){
+		int channel = (*hitOdd)->GetChannelID();
+		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
+		std::cout<<"hitZ is "<<z<<std::endl;
+		(*hitOdd)->SetZ(z);
+		track->AddHit(*hitOdd);
+	} 
+	for(auto hitEven = lineEven->GetHits()->begin(); hitEven != lineEven->GetHits()->end(); ++hitEven){
+		int channel = (*hitEven)->GetChannelID();
+		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
+		std::cout<<"hitZ is "<<z<<std::endl;
+		(*hitEven)->SetZ(z);
+		track->AddHit(*hitEven);
+	} 
+/*
+	//Final check of z position of hits, if out of CDC then abort this track
+	for(auto hit = track->GetHits()->begin(); hit != track->GetHits()->end(); ++hit){
+		if( (*hit)->GetZ() < -800. || (*hit)->GetZ() > 800.){
+			delete track;
+			return nullptr;
+		}
+	}
+*/	return track;
 }
 
 void TrackFitHandler::TrackFitting(CDCLineCandidate* track){

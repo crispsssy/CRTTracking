@@ -96,7 +96,7 @@ CDCLineCandidate* HoughHandler::FindCandidate(TH2D* hist, bool oddEven){
 	double theta = hist->GetXaxis()->GetBinCenter(binX);
 	double rho = hist->GetYaxis()->GetBinCenter(binY);
 	double maxVal = hist->GetBinContent(binX, binY);
-	std::cout<<"Peak at theta:rho "<<theta<<":"<<rho<<std::endl;
+//	std::cout<<"Peak at theta:rho "<<theta<<":"<<rho<<std::endl;
 
 	TVector3 pos(rho * cos(theta), rho * sin(theta), 0);
 	TVector3 dir(-sin(theta), cos(theta), 0);
@@ -161,17 +161,17 @@ bool HoughHandler::IsGoodCandidate(CDCLineCandidate*& lineOdd, CDCLineCandidate*
 
 	//return result
 	if(lineOdd->GetHits()->size() > 5 && lineEven->GetHits()->size() > 5){
-		std::cout<<"good "<<std::endl;
+//		std::cout<<"good "<<std::endl;
 		return true;
 	}
 	else if(lineOdd->GetHits()->size() > 5){
-		std::cout<<"partially (odd) good"<<std::endl;
+//		std::cout<<"partially (odd) good"<<std::endl;
 		delete lineEven;
 		lineEven = nullptr;
 		return true;
 	}
 	else if(lineEven->GetHits()->size() > 5){
-		std::cout<<"partially (even) good"<<std::endl;
+//		std::cout<<"partially (even) good"<<std::endl;
 		delete lineOdd;
 		lineOdd = nullptr;
 		return true;

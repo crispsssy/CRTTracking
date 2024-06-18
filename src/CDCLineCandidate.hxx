@@ -26,6 +26,10 @@ public:
 	CDCHitContainer* GetHits() const { return fHits; }
 	CDCHit* GetHit(int const hit_index) const { return fHits->at(hit_index); }
 	inline bool const GetOddEven() const { return fOddEven; }
+	double const GetXAtY(double y) const;
+	double const GetYAtX(double x) const;
+	double const GetZAtY(double y) const;
+	double const GetYAtZ(double z) const;
 
 private:
 	bool fOddEven; //Even layer for 0 and odd layer for 1

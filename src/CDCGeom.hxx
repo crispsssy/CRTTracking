@@ -5,6 +5,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TVector2.h>
+#include "CDCLineCandidate.hxx"
 
 class CDCGeom
 {
@@ -19,6 +20,9 @@ public:
 	TVector2 const ChannelToHVPos(int channel) const { return TVector2(XHV[channel], YHV[channel]); }
 	TVector2 const ChannelToZ0Pos(int channel) const { return TVector2( (XRO[channel]+XHV[channel])/2, (YRO[channel]+YHV[channel])/2 ); }
 	double const GetCDCLength() const { return CDCLength; }
+	double const ChannelYToZ(int channel, double y);
+	double const ChannelZToY(int channel, double z);
+	TVector2 const GetWireTrackIntersectionZY(CDCLineCandidate* track, int channel);
 
 private:
 	CDCGeom();

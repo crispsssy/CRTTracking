@@ -82,7 +82,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		if(efficiency_hough < 0.3) std::cout<<"entry:hough efficiency "<<iEvent<<":"<<efficiency_hough<<std::endl;
 		EventDisplay::Get().DrawLineCandidates(lines, iEvent);
 
-		//debug for angle diff, distance between lines
+/*		//debug for angle diff, distance between lines
 		for(auto lineOdd = lines->begin(); lineOdd != lines->end(); ++lineOdd){
 			//pick a odd layer candidate
 			if( (*lineOdd)->GetOddEven() == 1 ){
@@ -99,7 +99,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 				}
 			}
 		}
-	
+*/	
 
 
 		//3D Fitting
@@ -107,7 +107,11 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		if(!tracks){
 			continue;
 		}
-		EventDisplay::Get().DrawLineCandidates(tracks, iEvent);
+		if(tracks->size() > 2) std::cout<<"entry:numTrack "<<iEvent<<":"<<tracks->size()<<std::endl;
+
+		//Track fitting debug part
+		std::cout<<"Track fitting debug part"<<std::endl;
+		EventDisplay::Get().DrawEventDisplay(tracks, iEvent);
 
 
 		//release memory

@@ -14,9 +14,11 @@ public:
 	void SetHit(int fLayerID, int fCellID);
 	void InsertDriftTime(double driftTime){ fDriftTime.push_back(driftTime); }
 	void SetDOCA(double DOCA){ fDOCA = DOCA; }
+	void SetZ(double z){ fZ = z; }
 	int const GetChannelID() const { return fChannelID; }
 	double const GetDriftTime(int index) const { return fDriftTime.at(index); }
 	double const GetDOCA() const { return fDOCA; }
+	double const GetZ() const { return fZ; }
 
 	void ls() const;
 
@@ -24,6 +26,7 @@ private:
 	int fChannelID = -999;
 	std::vector<double> fDriftTime;
 	double fDOCA = 0.;
+	double fZ = 0.;
 };
 
 class CDCHitContainer : public std::vector<CDCHit*>

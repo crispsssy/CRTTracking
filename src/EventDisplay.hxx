@@ -12,6 +12,7 @@
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
 #include "CDCLineCandidate.hxx"
+#include "RuntimeParameter.hxx"
 
 class EventDisplay
 {
@@ -19,8 +20,10 @@ public:
 	~EventDisplay();
 	static EventDisplay& Get();
 	void DrawHits(CDCHitContainer* hits, int event);
-	void DrawCDC();
+	void DrawCDCXY();
+	void DrawCDCZY();
 	void DrawLineCandidates(CDCLineCandidateContainer* lines, int event);
+	void DrawEventDisplay(CDCLineCandidateContainer* tracks, int event);
 
 private:
 	EventDisplay(){}
