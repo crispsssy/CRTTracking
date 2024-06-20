@@ -5,6 +5,7 @@ namespace RuntimePar
 	//Basic information
 	int runNum = 0;
 	int const nCh = 4992;
+	std::string XTMode("RT");
 
 	//for Preprocess
 	bool const tdcCut = true;

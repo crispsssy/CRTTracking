@@ -1,12 +1,19 @@
 #include "EventLoop.hxx"
 
+using RuntimePar::runNum;
+using RuntimePar::XTMode;
+
 void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, int numEvent){
+	//Efficiency histograms
+	TH1D* h_preprocess = new TH1D("h_preprocess", "preprocess efficiency", 100, 0, 1);
+	TH1D* h_hough = new TH1D("h_hough", "Hough transform efficiency", 100, 0, 1);
+	TH1D* h_phiDiff = new TH1D("h_angleDiff", "angle diff", 256, -6.4, 6.4);
+	TH1D* h_dis = new TH1D("h_dis", "distance", 200, 0, 1000);
+
 	short tdcNhit[4992];
 	short adc[4992][32];
 	int tdcDiff[4992][32];
 	TFile* f_in = new TFile(f_in_path.c_str(), "READ");
-	TFile* f_out = new TFile(f_out_path.c_str(), "RECREATE");
-
 	TTree* t_in = (TTree*)f_in->Get("RECBE");
 	if(numEvent > t_in->GetEntries()) numEvent = t_in->GetEntries();
 
@@ -16,13 +23,22 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	t_in->SetBranchAddress("tdcDiff", &tdcDiff);
 	t_in->SetBranchAddress("adc", &adc);
 
-	//Efficiency histograms
-	TH1D* h_preprocess = new TH1D("h_preprocess", "preprocess efficiency", 100, 0, 1);
-	TH1D* h_hough = new TH1D("h_hough", "Hough transform efficiency", 100, 0, 1);
-	TH1D* h_phiDiff = new TH1D("h_angleDiff", "angle diff", 256, -6.4, 6.4);
-	TH1D* h_dis = new TH1D("h_dis", "distance", 200, 0, 1000);
+	//output file config
+	std::vector<TVector3> fTrkPos;
+	std::vector<TVector3> fTrkDir;
+	std::vector<double> fChi2;
+	std::vector<double> fNdf;
+	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + ".root";
+	TFile* f_out = new TFile(f_name_out.c_str(), "RECREATE");
+	TTree* t_out = new TTree("t", "t");
+
+	t_out->Branch("trkPos", &fTrkPos);
+	t_out->Branch("trkDir", &fTrkDir);
+	t_out->Branch("chi2", &fChi2);
+	t_out->Branch("ndf", &fNdf);
 
 	//Preprocess of hits
+	//f_in->cd();
 	for(int iEvent = startEvent; iEvent < startEvent+numEvent; ++iEvent){
 		t_in->GetEntry(iEvent);
 //		std::cout<<"Start process event "<<iEvent<<std::endl;
@@ -66,7 +82,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		//Hough transform
 		CDCLineCandidateContainer* lines = HoughHandler::Get().FindCandidates(hits);
 		if(!lines){
-//			std::cout<<"not candidate found after Hough transform at entry "<<iEvent<<", abort this entry"<<std::endl;
+//			std::cout<<"no candidate found after Hough transform at entry "<<iEvent<<", abort this entry"<<std::endl;
 			continue;
 		}
 //		std::cout<<"Found "<<lines->size()<<" candidates"<<std::endl;
@@ -107,14 +123,39 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		if(!tracks){
 			continue;
 		}
-		if(tracks->size() > 2) std::cout<<"entry:numTrack "<<iEvent<<":"<<tracks->size()<<std::endl;
+
+		//Save track to output file
+		std::vector<TVector3> trksPos;
+		std::vector<TVector3> trksDir;
+		std::vector<double> chi2;
+		std::vector<double> ndf;
+		for(auto track = tracks->begin(); track != tracks->end(); ++track){
+			if(!(*track)) continue; //TODO should remove this line after implementation
+			trksPos.push_back( (*track)->GetPos() );
+			trksDir.push_back( (*track)->GetDir() );
+			chi2.push_back( (*track)->GetChi2() );
+			ndf.push_back( (*track)->GetHits()->size() );
+		}
+		fTrkPos = trksPos;
+		fTrkDir = trksDir;
+		fChi2 = chi2;
+		fNdf = ndf;
+		t_out->Fill();
 
 		//Track fitting debug part
 		std::cout<<"Track fitting debug part"<<std::endl;
+		if(tracks->size() > 2) std::cout<<"entry:numTrack "<<iEvent<<":"<<tracks->size()<<std::endl;
 		EventDisplay::Get().DrawEventDisplay(tracks, iEvent);
 
 
 		//release memory
+		for(auto track = tracks->begin(); track != tracks->end(); ++track){
+			if(!(*track)) continue;
+			for(auto hit = (*track)->GetHits()->begin(); hit != (*track)->GetHits()->end(); ++hit){
+				delete (*hit);
+			}
+			delete (*track);
+		}
 		for(auto line = lines->begin(); line != lines->end(); ++line){
 			delete *line;
 		}
@@ -124,6 +165,12 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 
 		if( (iEvent+1) % 1000 == 0) std::cout<<"Preprocessed events: "<<iEvent + 1 - startEvent<<std::endl;
 	}
+	std::cout<<"Finished process events, now saving to output file"<<std::endl;
+
+	f_in->Close();
+	f_out->cd();
+	t_out->Write();
+	f_out->Close();
 
 	TCanvas* c = new TCanvas();
 	h_preprocess->Draw();

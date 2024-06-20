@@ -76,3 +76,33 @@ TVector2 const CDCGeom::GetWireTrackIntersectionZY(CDCLineCandidate* track, int 
 	double y = wire_dydz * z + wire_yAtz0;
 	return TVector2(z, y);
 }
+
+double const CDCGeom::GetStereoAngle(int channel){
+	return atan( sqrt(pow(XRO[channel] - XHV[channel], 2) + pow(YRO[channel] - YHV[channel], 2)) / (ZRO[channel] - ZHV[channel]) );
+}
+
+void CDCGeom::GetPOCA(TVector3 const& trkPos, TVector3 const& trkDir, int channel, TVector3& pocaT, TVector3& pocaW){
+	TVector2 wireZ0Pos = ChannelToZ0Pos(channel);
+	TVector3 wirePos(wireZ0Pos.X(), wireZ0Pos.Y(), 0.);
+	TVector3 wireDir = ChannelToWireDir(channel);
+	GetPOCA(trkPos, trkDir, wirePos, wireDir, pocaT, pocaW);
+}
+
+void CDCGeom::GetPOCA(TVector3 const& trkPos, TVector3 const& trkDir, TVector3 const& wirePos, TVector3 const& wireDir, TVector3& pocaT, TVector3& pocaW){
+	//normal vector of track and wire
+	TVector3 n = wireDir.Cross(trkDir).Unit();
+	//normal vector of plane contains track and n
+	TVector3 n1 = trkDir.Cross(n).Unit();
+	//normal vector of plane contains wire and n
+	TVector3 n2 = wireDir.Cross(n).Unit();
+
+	pocaT = trkPos + (wirePos - trkPos).Dot(n2) / trkDir.Dot(n2) * trkDir;
+	pocaW = wirePos + (trkPos - wirePos).Dot(n1) / wireDir.Dot(n1) * wireDir;
+}
+
+double const CDCGeom::GetDOCA(TVector3 const& trkPos, TVector3 const& trkDir, int channel){
+	TVector3 pocaT;
+	TVector3 pocaW;
+	GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
+	return (pocaW - pocaT).Mag();
+}

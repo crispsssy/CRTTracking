@@ -2,10 +2,12 @@
 #define _EVENTLOOP_HXX_
 
 #include <iostream>
+#include <vector>
 #include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TH1.h>
+#include <TVector3.h>
 #include "CDCHit.hxx"
 #include "Preprocess.hxx"
 #include "EventDisplay.hxx"

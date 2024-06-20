@@ -10,6 +10,8 @@
 #include "CDCLineCandidate.hxx"
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
+#include "TrackFitMinimizer.hxx"
+#include "RuntimeParameter.hxx"
 
 class TrackFitHandler{
 public:
@@ -25,7 +27,6 @@ private:
 
 	bool IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
 	CDCLineCandidate* FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
-	void TrackFitting(CDCLineCandidate* track);
 
 	double fMaxDistanceEO = 300; //mm distance between even and odd layer lines
 	double fMaxPhiDiff = 1.; //rad

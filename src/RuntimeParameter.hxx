@@ -1,6 +1,7 @@
 #ifndef _RUNTIMEPARAMETER_HXX_
 #define _RUNTIMEPARAMETER_HXX_
 
+#include <string>
 #include <TMath.h>
 
 namespace RuntimePar
@@ -8,6 +9,7 @@ namespace RuntimePar
 	//Basic information
 	extern int runNum;
 	extern int const nCh;
+	extern std::string XTMode;
 
 	//for Preprocess
 	extern bool const adcSumCut;

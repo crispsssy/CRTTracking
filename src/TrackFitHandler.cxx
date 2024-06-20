@@ -1,5 +1,7 @@
 #include "TrackFitHandler.hxx"
 
+using RuntimePar::XTMode;
+
 TrackFitHandler::TrackFitHandler(){
 
 }
@@ -44,7 +46,8 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 			else lineEven = line->second;
 		}
 		CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
-		TrackFitting(track);
+		TrackFitMinimizer fit(track);
+		fit.TrackFitting();
 		tracks->push_back(track);
 	}
 
@@ -94,54 +97,73 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 	double phi = (phiOdd + phiEven) / 2;
 //	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
-	//find x of bottum hit and top hit
-	double xOddBottum = lineOdd->GetXAtY(-850.);
-	double xOddTop    = lineOdd->GetXAtY(850.);
-	double xEvenBottum = lineEven->GetXAtY(-850.);
-	double xEvenTop    = lineEven->GetXAtY(850.);
+	//Find theta and POCA.Z of the track
+	double xOddBottum, yOddBottum, xOddTop, yOddTop;
+	double xEvenBottum, yEvenBottum, xEvenTop, yEvenTop;
+	lineOdd->GetROXYAtR(850., xOddBottum, yOddBottum, xOddTop, yOddTop);
+	lineEven->GetROXYAtR(850., xEvenBottum, yEvenBottum, xEvenTop, yEvenTop);
+	double disBottum = sqrt( pow(xOddBottum - xEvenBottum, 2) + pow(yOddBottum - yEvenBottum, 2) );
+	if(atan2(yOddBottum, xOddBottum) < atan2(yEvenBottum, xEvenBottum)) disBottum = -disBottum;
+	double disTop = sqrt( pow(xOddTop - xEvenTop, 2) + pow(yOddTop - yEvenTop, 2) );
+	if(atan2(yOddTop, xOddTop) > atan2(yEvenTop, xEvenTop)) disTop = -disTop;
 	double cdcLength = CDCGeom::Get().GetCDCLength();
-	double projectZ = ((xOddBottum - xEvenBottum) - (xOddTop - xEvenTop)) / fMaxDistanceEO * cdcLength;
-	double theta;
-	if(projectZ == 0) theta = TMath::Pi() / 2;
-	theta = atan( 1750. / projectZ);
-//	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
+	double projectZ = (disBottum - disTop) / fMaxDistanceEO * cdcLength;
+	double theta = atan2(1750., projectZ);
+	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
+	std::cout<<"disBottum:disTop:projectZ "<<disBottum<<":"<<disTop<<":"<<projectZ<<std::endl;
 	std::cout<<"phi:theta "<<phi<<":"<<theta<<std::endl;
-
-	//Set track parameters
 	TVector3 dir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 	track->SetDir(dir);
 
-	double posZ = cdcLength / 2 - (xOddBottum - xEvenBottum + xOddTop - xEvenTop) / 2 / fMaxDistanceEO * cdcLength;
+	double posZ = cdcLength / 2 - (disBottum + disTop) / 2 / fMaxDistanceEO * cdcLength;
 	pos.SetZ(posZ);
 	track->SetPos(pos);
-//	std::cout<<"z position of track "<<posZ<<std::endl;
+	std::cout<<"z position of track "<<posZ<<std::endl;
 
-	//Store hits in track
+	//Set z position of hits in track
 	for(auto hitOdd = lineOdd->GetHits()->begin(); hitOdd != lineOdd->GetHits()->end(); ++hitOdd){
 		int channel = (*hitOdd)->GetChannelID();
 		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
-		std::cout<<"hitZ is "<<z<<std::endl;
 		(*hitOdd)->SetZ(z);
-		track->AddHit(*hitOdd);
+		std::cout<<"z position of hit "<<z<<std::endl;
+		CDCHit* hit = new CDCHit(**hitOdd);
+		track->AddHit(hit);
 	} 
 	for(auto hitEven = lineEven->GetHits()->begin(); hitEven != lineEven->GetHits()->end(); ++hitEven){
 		int channel = (*hitEven)->GetChannelID();
 		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
-		std::cout<<"hitZ is "<<z<<std::endl;
 		(*hitEven)->SetZ(z);
-		track->AddHit(*hitEven);
-	} 
-/*
+		std::cout<<"z position of hit "<<z<<std::endl;
+		CDCHit* hit = new CDCHit(**hitEven);
+		track->AddHit(hit);
+	}
+
 	//Final check of z position of hits, if out of CDC then abort this track
 	for(auto hit = track->GetHits()->begin(); hit != track->GetHits()->end(); ++hit){
-		if( (*hit)->GetZ() < -800. || (*hit)->GetZ() > 800.){
+		int channel = (*hit)->GetChannelID();
+		if( (*hit)->GetZ() < -1500. || (*hit)->GetZ() > 1500.){
 			delete track;
 			return nullptr;
 		}
+		else if( (*hit)->GetZ() < -1000.){
+			(*hit)->SetZ(-CDCGeom::Get().ChannelToMaximumZ(channel));
+		}
+		else if( (*hit)->GetZ() > 1000.){
+			(*hit)->SetZ(CDCGeom::Get().ChannelToMaximumZ(channel));
+		}
+		
+		std::vector<double> driftTimes = (*hit)->GetDriftTime();
+		if(XTMode == "RT"){
+			for(auto driftTime = driftTimes.begin(); driftTime != driftTimes.end(); ++driftTime){
+				(*hit)->InsertDriftDistance(CalibInfo::Get().GetRAtT(*driftTime));
+			}
+		}
+		else if(XTMode == "RZT"){
+			std::cout<<std::endl;
+		}
+		else if(XTMode == "XYZT"){
+			std::cout<<std::endl;
+		}//TODO different XT mode
 	}
-*/	return track;
-}
-
-void TrackFitHandler::TrackFitting(CDCLineCandidate* track){
-
+	return track;
 }

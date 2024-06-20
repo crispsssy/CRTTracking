@@ -140,7 +140,7 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 	DrawCDCXY();
 	c->cd(2);
 	TH1F* frameZY = gPad->DrawFrame(-850., -850., 850., 850.);
-	frameZY->SetTitle(Form("Event display for ZY plane at RO run%d entry%d", runNum, event));
+	frameZY->SetTitle(Form("Event display for ZY plane at X=0 run%d entry%d", runNum, event));
 	frameZY->GetXaxis()->SetTitle("Z [mm]");
 	frameZY->GetYaxis()->SetTitle("Y [mm]");
 	DrawCDCZY();
@@ -155,8 +155,26 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 
 		for(auto hit = (*track)->GetHits()->begin(); hit != (*track)->GetHits()->end(); ++hit){
 			int channel = (*hit)->GetChannelID();
-			gXY->AddPoint( CDCGeom::Get().ChannelToROPos(channel).X(), CDCGeom::Get().ChannelToROPos(channel).Y() );
+			TVector2 ROPos = CDCGeom::Get().ChannelToROPos(channel);
+			gXY->AddPoint( ROPos.X(), ROPos.Y() );
+			double residual = (*hit)->GetDOCA() - (*hit)->GetDriftDistance(0);
+			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
+			txy->SetTextColor(2 + track - tracks->begin());
+			txy->SetTextFont(43);
+			txy->SetTextSize(10);
 			gZY->AddPoint( (*hit)->GetZ(), CDCGeom::Get().ChannelToROPos(channel).Y() );
+			TLatex* tzy = new TLatex((*hit)->GetZ(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
+			tzy->SetTextColor(2 + track - tracks->begin());
+			tzy->SetTextFont(43);
+			tzy->SetTextSize(10);
+
+			c->cd(1);
+			txy->Draw("SAME");
+			gPad->Update();
+			std::cout<<"Drawn hit info: ch:z:residual "<<channel<<":"<<(*hit)->GetZ()<<":"<<residual<<std::endl;
+			c->cd(2);
+			tzy->Draw("SAME");
+			gPad->Update();
 		}
 
 		gXY->SetMarkerStyle(20);

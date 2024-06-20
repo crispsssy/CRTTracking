@@ -9,6 +9,8 @@
 #include <TVector2.h>
 #include <TEllipse.h>
 #include <TLine.h>
+#include <TText.h>
+#include <TLatex.h>
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
 #include "CDCLineCandidate.hxx"
