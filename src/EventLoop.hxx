@@ -3,11 +3,14 @@
 
 #include <iostream>
 #include <vector>
+#include <TSystem.h>
+#include <TInterpreter.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <TCanvas.h>
 #include <TH1.h>
 #include <TVector3.h>
+#include <TMath.h>
 #include "CDCHit.hxx"
 #include "Preprocess.hxx"
 #include "EventDisplay.hxx"

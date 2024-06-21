@@ -1,5 +1,19 @@
 #include "CalibInfo.hxx"
 
+using RuntimePar::XTMode;
+/*
+CalibInfo::CalibInfo(){
+	if(XTMode == "RT"){
+		ReadRTTable();
+	}
+	else if(XTMode == "RZT"){
+		ReadRZTTable();
+	}
+	else if(XTMode == "XYZT"){
+		ReadXYZTTable();
+	}
+}
+*/
 CalibInfo* CalibInfo::fCalibInfo = new CalibInfo();
 
 CalibInfo& CalibInfo::Get(){

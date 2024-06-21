@@ -109,23 +109,23 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 	double cdcLength = CDCGeom::Get().GetCDCLength();
 	double projectZ = (disBottum - disTop) / fMaxDistanceEO * cdcLength;
 	double theta = atan2(1750., projectZ);
-	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
-	std::cout<<"disBottum:disTop:projectZ "<<disBottum<<":"<<disTop<<":"<<projectZ<<std::endl;
-	std::cout<<"phi:theta "<<phi<<":"<<theta<<std::endl;
+//	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
+//	std::cout<<"disBottum:disTop:projectZ "<<disBottum<<":"<<disTop<<":"<<projectZ<<std::endl;
+//	std::cout<<"phi:theta "<<phi<<":"<<theta<<std::endl;
 	TVector3 dir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 	track->SetDir(dir);
 
 	double posZ = cdcLength / 2 - (disBottum + disTop) / 2 / fMaxDistanceEO * cdcLength;
 	pos.SetZ(posZ);
 	track->SetPos(pos);
-	std::cout<<"z position of track "<<posZ<<std::endl;
+//	std::cout<<"z position of track "<<posZ<<std::endl;
 
 	//Set z position of hits in track
 	for(auto hitOdd = lineOdd->GetHits()->begin(); hitOdd != lineOdd->GetHits()->end(); ++hitOdd){
 		int channel = (*hitOdd)->GetChannelID();
 		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
 		(*hitOdd)->SetZ(z);
-		std::cout<<"z position of hit "<<z<<std::endl;
+//		std::cout<<"z position of hit "<<z<<std::endl;
 		CDCHit* hit = new CDCHit(**hitOdd);
 		track->AddHit(hit);
 	} 
@@ -133,7 +133,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 		int channel = (*hitEven)->GetChannelID();
 		double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
 		(*hitEven)->SetZ(z);
-		std::cout<<"z position of hit "<<z<<std::endl;
+//		std::cout<<"z position of hit "<<z<<std::endl;
 		CDCHit* hit = new CDCHit(**hitEven);
 		track->AddHit(hit);
 	}

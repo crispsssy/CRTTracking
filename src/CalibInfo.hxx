@@ -6,6 +6,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TF1.h>
+#include "RuntimeParameter.hxx"
 
 class CalibInfo{
 public:

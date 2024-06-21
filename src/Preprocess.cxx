@@ -36,7 +36,7 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
         t_in->SetBranchAddress("tdcDiff", &tdcDiff);
 	t_in->SetBranchAddress("adc", &adc);
 
-	for(int iEvent=0; iEvent<5000; ++iEvent){  //FIXME new use 500 entries
+	for(int iEvent=0; iEvent<5000; ++iEvent){  //FIXME new use 5000 entries
 		t_in->GetEntry(iEvent);
 		for(int iCh = 0; iCh<4992; ++iCh){
 			if(tdcNhit[iCh] > 0){
@@ -74,9 +74,11 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	}
 
 	TCanvas* c = new TCanvas();
+	c->SetTitle("Preprocess");
 	c->Divide(2,1);
 	c->cd(1);
 	h_tdc->Draw();
+	std::cout<<"histogram drawn"<<std::endl;
 //	f_T0->Draw();
 	TLine* l = new TLine(fT0, 0, fT0, h_tdc->GetYaxis()->GetXmax());
 	l->SetLineColor(kRed);
@@ -88,6 +90,7 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 		h_ped->Fill(fPedestal[i]);
 	}
 	h_ped->Draw();
+	c->Update();
 }
 
 CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC){
@@ -100,7 +103,7 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 			if(*adc - fPedestal[channel] > 0) adcSum += *adc - fPedestal[channel];
 		}
 		if(adcSum < fADCSumThreshold && thisTDC.at(0) - fT0 < fADCSumCutAtTDC){
-			//		std::cout<<"abort hit at ch "<<channel<<" with adcsum "<<adcSum<<", pedestal is "<<fPedestal[channel]<<std::endl;
+			//	std::cout<<"abort hit at ch "<<channel<<" with adcsum "<<adcSum<<", pedestal is "<<fPedestal[channel]<<std::endl;
 			return nullptr;
 		}
 	}
@@ -119,8 +122,9 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 			}
 		}
 	}
-
-	return hit;
+	
+	if(hit->GetDriftTime().size() == 0) return nullptr;
+	else return hit;
 }
 
 void PreProcess::CheckNumHits(CDCHitContainer* hits){

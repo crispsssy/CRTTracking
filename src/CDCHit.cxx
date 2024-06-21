@@ -1,5 +1,13 @@
 #include "CDCHit.hxx"
 
+bool CDCHit::IncreaseTDCIndex(){
+	if(fUseTDC + 1 >= fDriftTime.size()) return false;
+	else{
+		++fUseTDC;
+		return true;
+	}
+}
+
 void CDCHit::ls() const{
 	std::cout<<"Hit at ChannelID "<<fChannelID<<std::endl;
 }

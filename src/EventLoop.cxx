@@ -4,6 +4,7 @@ using RuntimePar::runNum;
 using RuntimePar::XTMode;
 
 void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, int numEvent){
+	gInterpreter->GenerateDictionary("vector<TVector3>", "vector;TVector3.h");
 	//Efficiency histograms
 	TH1D* h_preprocess = new TH1D("h_preprocess", "preprocess efficiency", 100, 0, 1);
 	TH1D* h_hough = new TH1D("h_hough", "Hough transform efficiency", 100, 0, 1);
@@ -28,7 +29,8 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	std::vector<TVector3> fTrkDir;
 	std::vector<double> fChi2;
 	std::vector<double> fNdf;
-	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + ".root";
+	std::vector<double> fProb;
+	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_" + XTMode + ".root";
 	TFile* f_out = new TFile(f_name_out.c_str(), "RECREATE");
 	TTree* t_out = new TTree("t", "t");
 
@@ -36,6 +38,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	t_out->Branch("trkDir", &fTrkDir);
 	t_out->Branch("chi2", &fChi2);
 	t_out->Branch("ndf", &fNdf);
+	t_out->Branch("prob", &fProb);
 
 	//Preprocess of hits
 	//f_in->cd();
@@ -70,14 +73,14 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		double efficiency_pre = (double)hits->size() / numRawHits;
 		h_preprocess->Fill(efficiency_pre);
 		if(hits->empty()) continue;
-
+/*
 		//For Preprocess debug
 		std::cout<<"Preprocess debug part"<<std::endl;
 		if(efficiency_pre < 0.7) std::cout<<"entry:Preprocess efficiency "<<iEvent<<":"<<efficiency_pre<<std::endl;
 		EventDisplay::Get().DrawHits(rawHits, iEvent);
 		EventDisplay::Get().DrawHits(hits, iEvent);
 		std::cout<<"Preprocess finished for entry "<<iEvent<<std::endl;
-
+*/
 
 		//Hough transform
 		CDCLineCandidateContainer* lines = HoughHandler::Get().FindCandidates(hits);
@@ -97,6 +100,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		std::cout<<"Hough transform debug part"<<std::endl;
 		if(efficiency_hough < 0.3) std::cout<<"entry:hough efficiency "<<iEvent<<":"<<efficiency_hough<<std::endl;
 		EventDisplay::Get().DrawLineCandidates(lines, iEvent);
+		std::cout<<"Hough transform finished for entry "<<iEvent<<std::endl;
 
 /*		//debug for angle diff, distance between lines
 		for(auto lineOdd = lines->begin(); lineOdd != lines->end(); ++lineOdd){
@@ -129,23 +133,27 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		std::vector<TVector3> trksDir;
 		std::vector<double> chi2;
 		std::vector<double> ndf;
+		std::vector<double> prob;
 		for(auto track = tracks->begin(); track != tracks->end(); ++track){
 			if(!(*track)) continue; //TODO should remove this line after implementation
 			trksPos.push_back( (*track)->GetPos() );
 			trksDir.push_back( (*track)->GetDir() );
 			chi2.push_back( (*track)->GetChi2() );
 			ndf.push_back( (*track)->GetHits()->size() );
+			prob.push_back( TMath::Prob( (*track)->GetChi2(), (*track)->GetHits()->size() ) );
 		}
 		fTrkPos = trksPos;
 		fTrkDir = trksDir;
 		fChi2 = chi2;
 		fNdf = ndf;
+		fProb = prob;
 		t_out->Fill();
 
 		//Track fitting debug part
 		std::cout<<"Track fitting debug part"<<std::endl;
 		if(tracks->size() > 2) std::cout<<"entry:numTrack "<<iEvent<<":"<<tracks->size()<<std::endl;
 		EventDisplay::Get().DrawEventDisplay(tracks, iEvent);
+		std::cout<<"3D fitting finished for entry "<<iEvent<<std::endl;
 
 
 		//release memory

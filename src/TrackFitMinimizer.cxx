@@ -2,48 +2,58 @@
 
 using RuntimePar::XTMode;
 
-void TrackFitMinimizer::TrackFitting(){
-	if(!fTrack) return;
-
-        ROOT::Math::Minimizer* fit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
-        if(!fit){
+TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
+	fTrack = track;
+	fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
+        if(!fFit){
                 std::cerr<<"Can not create minimizer"<<std::endl;
                 exit(-1);
         }
+	std::cout<<"fit constructed"<<std::endl;
+}
 
-        fit->SetMaxFunctionCalls(1000000);
-        fit->SetMaxIterations(10000);
-        fit->SetTolerance(0.001);
-        fit->SetPrintLevel(1);
+TrackFitMinimizer::~TrackFitMinimizer(){
+	delete fFit;
+}
+
+void TrackFitMinimizer::TrackFitting(){
+	if(!fTrack) return;
+
+        fFit->SetTolerance(0.001);
+        fFit->SetPrintLevel(-1);
 
 	std::function<double(double const*)> func = [this](double const* pars){
 		return this->FittingFunctionRT(pars);
 	};
         ROOT::Math::Functor functionRT(func, 4);
-        fit->SetFunction(functionRT);
-        fit->SetVariable(0,     "x",     fTrack->GetXAtZ(0.),       0.1);
-        fit->SetVariable(1,     "y",     fTrack->GetYAtZ(0.),       0.1);
-        fit->SetVariable(2,     "phi",   fTrack->GetDir().Phi(),    0.001);
-        fit->SetVariable(3,     "theta", fTrack->GetDir().Theta(),  0.001);
-        fit->SetVariableLimits(0,       -1700.,       1700.);
-        fit->SetVariableLimits(1,       -1700.,       1700.);
-        fit->SetVariableLimits(2,       0.,           TMath::Pi() * 2);
-        fit->SetVariableLimits(3,       -TMath::Pi(), TMath::Pi());
+        fFit->SetFunction(functionRT);
+        fFit->SetVariable(0,     "x",     fTrack->GetXAtZ(0.),       0.01);
+        fFit->SetVariable(1,     "y",     fTrack->GetYAtZ(0.),       0.01);
+        fFit->SetVariable(2,     "phi",   fTrack->GetDir().Phi(),    0.001);
+        fFit->SetVariable(3,     "theta", fTrack->GetDir().Theta(),  0.001);
+        fFit->SetVariableLimits(0,       -1700.,       1700.);
+        fFit->SetVariableLimits(1,       -1700.,       1700.);
+        fFit->SetVariableLimits(2,       0.,           TMath::Pi() * 2);
+        fFit->SetVariableLimits(3,       -TMath::Pi(), TMath::Pi());
 
-	std::cout<<"Start minimize with TMinuit2"<<std::endl;
-        fit->Minimize();
-	fTrack->SetChi2( fit->MinValue() );
-	double const* pars = fit->X();
-        std::cout<<"Minimum chi2 is "<<fit->MinValue()<<std::endl;
-
+//	std::cout<<"Start minimize with TMinuit2"<<std::endl;
+        fFit->Minimize();
+	fTrack->SetChi2( fFit->MinValue() );
+	double const* pars = fFit->X();
+//	std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
 	UpdateTrack(pars);
 
+	Optimize();
+}
 
+double TrackFitMinimizer::GetChi2(){
+	double const pars[4]{fTrack->GetXAtZ(0), fTrack->GetYAtZ(0.), fTrack->GetDir().Phi(), fTrack->GetDir().Theta() };
+	return FittingFunctionRT(pars);
 }
 
 double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 //	std::cout<<"Fitting Function RT called"<<std::endl;
-        //Define chi2 of fitting here
+        //Define chi2 of fFitting here
 	double xAtZ0 = pars[0];
 	double yAtZ0 = pars[1];
 	double phi = pars[2];
@@ -56,9 +66,10 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 	for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
 		int channel = (*hit)->GetChannelID();
 		double DOCA = CDCGeom::Get().GetDOCA(trkPosZ0, trkDir, channel);
-		double R = CalibInfo::Get().GetRAtT( (*hit)->GetDriftTime(0) );
-		double sigma = CalibInfo::Get().GetSpatialResolution(R);
-		chi2 += pow(DOCA - R, 2) / sigma;
+		double driftTime = (*hit)->GetDriftTime(0);
+		double driftDistance = CalibInfo::Get().GetRAtT(driftTime);
+		double sigma = CalibInfo::Get().GetSpatialResolution(driftDistance);
+		chi2 += pow(DOCA - driftDistance, 2) / pow(sigma, 2);
 	}
 	return chi2;
 }
@@ -95,4 +106,8 @@ void TrackFitMinimizer::UpdateTrack(double const* pars){
 		std::cout<<"No such kind of XT mode!!"<<std::endl;
 		exit(-1);
 	}
+}
+
+void TrackFitMinimizer::Optimize(){
+
 }

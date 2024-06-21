@@ -18,7 +18,7 @@ add_library(Tracking ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
 		     ${CMAKE_CURRENT_SOURCE_DIR}/src/vector_of_TVector3_Dict.cxx)
 target_include_directories(Tracking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
          		   		   ${ROOT_INCLUDE_DIRS})
-target_link_libraries(Tracking ${ROOT_LIBRARIES} ROOT::Minuit2)
+target_link_libraries(Tracking ${ROOT_LIBRARIES})
 
 add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cxx)
 target_link_libraries(CRTTracking PUBLIC Tracking)

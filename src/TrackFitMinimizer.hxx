@@ -13,14 +13,18 @@
 
 class TrackFitMinimizer{
 public:
-	TrackFitMinimizer(CDCLineCandidate* track){ fTrack = track; }
+	TrackFitMinimizer(CDCLineCandidate* track);
+	~TrackFitMinimizer();
 	void TrackFitting();
+	double GetChi2();
 
 private:
 	double FittingFunctionRT(double const* pars);
 	void UpdateTrack(double const* pars);
+	void Optimize();
 
-	CDCLineCandidate* fTrack;
+	CDCLineCandidate* fTrack = nullptr;
+	ROOT::Math::Minimizer* fFit = nullptr;
 };
 
 #endif

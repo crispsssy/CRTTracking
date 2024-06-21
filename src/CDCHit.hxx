@@ -16,6 +16,7 @@ public:
 	void InsertDriftTime(double driftTime){ fDriftTime.push_back(driftTime); }
 	void SetDOCA(double DOCA){ fDOCA = DOCA; }
 	void SetZ(double z){ fZ = z; }
+	bool IncreaseTDCIndex();
 	void InsertDriftDistance(double dis){ fDriftDistance.push_back(dis); }
 	int const GetChannelID() const { return fChannelID; }
 	double const GetDriftTime(int index) const { return fDriftTime.at(index); }
@@ -33,6 +34,7 @@ private:
 	std::vector<double> fDriftDistance;
 	double fDOCA = 0.;
 	double fZ = 0.;
+	unsigned int fUseTDC = 0; //determine which TDC will be used for fitting
 };
 
 class CDCHitContainer : public std::vector<CDCHit*>

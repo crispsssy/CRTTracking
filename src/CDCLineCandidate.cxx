@@ -54,8 +54,8 @@ void CDCLineCandidate::GetROXYAtR(double r, double& xBottum, double& yBottum, do
 	double y1 = r * sin(theta0 + theta);
 	double x2 = r * cos(theta0 - theta);
 	double y2 = r * sin(theta0 - theta);
-	std::cout<<"r0 : theta0   : theta   : x1   : y1   : x2   : y2 "<<std::endl
-		 <<r0<<" : "<<theta0<<" : "<<theta<<" : "<<x1<<" : "<<y1<<" : "<<x2<<" : "<<y2<<std::endl;
+//	std::cout<<"r0 : theta0   : theta   : x1   : y1   : x2   : y2 "<<std::endl
+//		 <<r0<<" : "<<theta0<<" : "<<theta<<" : "<<x1<<" : "<<y1<<" : "<<x2<<" : "<<y2<<std::endl;
 
 	if(y2 > y1){
 		xBottum = x1;
