@@ -13,7 +13,9 @@ int main(int argc, char** argv){
 	int startEvent = atoi(argv[3]);
 	int numEvent = atoi(argv[4]);
 	std::string::size_type idx = f_in_path.find("run0");
+	RuntimePar::f_in_path = f_in_path;
 	RuntimePar::runNum = stoi(f_in_path.substr(idx+4, 4));
+	RuntimePar::startEvent = startEvent;
 
 	TApplication app("app", &argc, argv);
 

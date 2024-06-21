@@ -5,6 +5,7 @@ using RuntimePar::XTMode;
 
 void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, int numEvent){
 	gInterpreter->GenerateDictionary("vector<TVector3>", "vector;TVector3.h");
+//	gInterpreter->GenerateDictionary("EventDisplay", "/Users/siyuan/Physics/comet/crt/tracking/src/EventDisplay.hxx");
 	//Efficiency histograms
 	TH1D* h_preprocess = new TH1D("h_preprocess", "preprocess efficiency", 100, 0, 1);
 	TH1D* h_hough = new TH1D("h_hough", "Hough transform efficiency", 100, 0, 1);

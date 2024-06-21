@@ -3,22 +3,27 @@ project(CRTTracking)
 set(CMAKE_CXX_STANDARD 14)
 
 find_package(ROOT REQUIRED)
+include_directories(${ROOT_INCLUDE_DIRS})
+link_directories(${ROOT_LIBRARY_DIR})
 
-add_library(Tracking ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCGeom.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/EventLoop.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/Preprocess.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCLineCandidate.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/HoughHandler.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeParameter.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitHandler.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizer.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
-		     ${CMAKE_CURRENT_SOURCE_DIR}/src/vector_of_TVector3_Dict.cxx)
-target_include_directories(Tracking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
-         		   		   ${ROOT_INCLUDE_DIRS})
-target_link_libraries(Tracking ${ROOT_LIBRARIES})
+#Make dictionaries
+ROOT_GENERATE_DICTIONARY(${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay ${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay.hxx LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay_LinkDef.h)
+
+set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/CDCGeom.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/EventLoop.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/Preprocess.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/CDCLineCandidate.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/HoughHandler.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeParameter.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitHandler.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizer.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx)
+add_library(Tracking SHARED ${SOURCES})
+target_include_directories(Tracking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(Tracking ${ROOT_LIBRARIES} ROOT::Gui)
 
 add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cxx)
 target_link_libraries(CRTTracking PUBLIC Tracking)

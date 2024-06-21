@@ -1,6 +1,33 @@
 #include "EventDisplay.hxx"
 
+using RuntimePar::f_in_path;
 using RuntimePar::runNum;
+using RuntimePar::startEvent;
+
+EventDisplay::EventDisplay(){
+	short adc[4992][32];
+	short tdcNhit[4992];
+	TFile f(f_in_path.c_str(), "READ");
+	TTree* t = (TTree*)f.Get("RECBE");
+	t->SetBranchAddress("adc", &adc);
+	t->SetBranchAddress("tdcNhit", &tdcNhit);
+	t->GetEntry(startEvent);
+	for(int iCh = 0; iCh < 4992; ++iCh){
+		if(tdcNhit[iCh] > 0){
+			TGraph* g = new TGraph();
+			g->SetName(Form("g_%d", iCh));
+			g->SetTitle(Form("waveform of ch %d", iCh));
+			g->SetMarkerStyle(58);
+			g->SetMarkerColor(kRed);
+			g->GetXaxis()->SetTitle("ADC sample index");
+			g->GetYaxis()->SetTitle("ADC value");
+			for(int iSample = 0; iSample < 32; ++iSample){
+				g->AddPoint(iSample, adc[iCh][iSample]);
+			}
+			waveforms[iCh] = g;
+		}
+	}
+}
 
 EventDisplay::~EventDisplay(){
 	for(std::vector<TCanvas*>::iterator itr = fCanvases.begin(); itr != fCanvases.end(); ++itr){
@@ -17,20 +44,55 @@ EventDisplay& EventDisplay::Get(){
 	return *fEventDisplay;
 }
 
+void EventDisplay::HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int_t y){
+	auto store = gPad;
+	c_waveform = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("c_waveform");
+	if(!c_waveform){
+		std::cout<<"Make new Canvas for ADC waveform"<<std::endl;
+		c_waveform = new TCanvas("c_waveform", "ADC waveform", 505, 0, 600, 400);
+	}
+	
+	if(ihp == -1){
+		delete c_waveform;
+		return;
+	}
+
+	if(waveforms.size() != 0 && waveforms.find(ihp) != waveforms.end()){
+		c_waveform->cd();
+		waveforms.at(ihp)->Draw("APL");
+		gPad->Update();
+	}
+	gPad = store;
+}
+
 void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
 	TCanvas* c = new TCanvas();
 	fCanvases.push_back(c);
+//	c->HighlightConnect("HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int_t y)");
+	c->Connect("Highlighted(TVirtualPad*, TObject*, Int_t, Int_t)", "EventDisplay", this, "HighlightGraph(TVirtualPad*, TObject*, Int_t, Int_t)");
 
 	c->Divide(2,1);
 	TGraph* hitmap_even = new TGraph();
 	TGraph* hitmap_odd = new TGraph();
 	for(auto hit = hits->begin(); hit != hits->end(); ++hit){
-		int layer = CDCGeom::Get().ChannelToLayer( (*hit)->GetChannelID() );
+		int channel = (*hit)->GetChannelID();
+		int layer = CDCGeom::Get().ChannelToLayer(channel);
 		TVector2 pos = CDCGeom::Get().ChannelToROPos( (*hit)->GetChannelID() );
 		if(layer % 2 == 0){
-			hitmap_even->AddPoint(pos.X(), pos.Y());
+			hitmap_even->SetPoint(channel, pos.X(), pos.Y());
 		}
-		else hitmap_odd->AddPoint(pos.X(), pos.Y());
+		else hitmap_odd->SetPoint(channel, pos.X(), pos.Y());
+	}
+	//move unused point out of window
+	for(int i=0; i<hitmap_odd->GetN(); ++i){
+		double x, y = 0.;
+		hitmap_odd->GetPoint(i, x, y);
+		if(x == 0 && y == 0) hitmap_odd->SetPoint(i, 99999, 99999);
+	}
+	for(int i=0; i<hitmap_even->GetN(); ++i){
+		double x, y = 0.;
+		hitmap_even->GetPoint(i, x, y);
+		if(x == 0 && y == 0) hitmap_even->SetPoint(i, 99999, 99999);
 	}
 
 	//odd layer
@@ -58,6 +120,9 @@ void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
         hitmap_even->SetMarkerColor(1);
         hitmap_even->Draw("P");
         gPad->Update();
+
+	hitmap_odd->SetHighlight();
+	hitmap_even->SetHighlight();
 
 	std::cout<<"Drawn hits"<<std::endl;
 }

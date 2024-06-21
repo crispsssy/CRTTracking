@@ -2,6 +2,7 @@
 #define _EVENTDISPLAY_HXX_
 
 #include <iostream>
+#include <TROOT.h>
 #include <TCanvas.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -26,9 +27,10 @@ public:
 	void DrawCDCZY();
 	void DrawLineCandidates(CDCLineCandidateContainer* lines, int event);
 	void DrawEventDisplay(CDCLineCandidateContainer* tracks, int event);
+	void HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int_t y);
 
 private:
-	EventDisplay(){}
+	EventDisplay();
 	EventDisplay(EventDisplay const& src);
 	EventDisplay& operator=(EventDisplay const& rhs);
 	static EventDisplay* fEventDisplay;
@@ -36,6 +38,8 @@ private:
 	std::vector<TCanvas*> fCanvases;
 	std::vector<TGraph*> fGraphs;
 	std::vector<TH1*> fHisograms;
+	std::map<int, TGraph*> waveforms;
+	TCanvas* c_waveform;
 
 };
 

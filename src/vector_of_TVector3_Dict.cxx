@@ -35,7 +35,7 @@
 #include "TDataMember.h"
 
 // Header files passed as explicit arguments
-#include "../../../../root/install/include/TVector3.h"
+#include "/Users/siyuan/Physics/root/install/include/TVector3.h"
 
 // Header files passed via #pragma extra_include
 
@@ -110,7 +110,7 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_vector_of_TVector3_Dict_Impl() {
     static const char* headers[] = {
-"../../../../root/install/include/TVector3.h",
+"/Users/siyuan/Physics/root/install/include/TVector3.h",
 nullptr
     };
     static const char* includePaths[] = {
@@ -124,7 +124,7 @@ nullptr
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 extern int __Cling_AutoLoading_Map;
-class __attribute__((annotate("$clingAutoload$../../../../root/install/include/TVector3.h")))  TVector3;
+class __attribute__((annotate("$clingAutoload$/Users/siyuan/Physics/root/install/include/TVector3.h")))  TVector3;
 namespace std{inline namespace __1{template <class _Tp> class __attribute__((annotate("$clingAutoload$iosfwd")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
 }}
 )DICTFWDDCLS";
@@ -134,7 +134,7 @@ namespace std{inline namespace __1{template <class _Tp> class __attribute__((ann
 
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
-#include "../../../../root/install/include/TVector3.h"
+#include "/Users/siyuan/Physics/root/install/include/TVector3.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";
