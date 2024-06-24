@@ -9,7 +9,7 @@ TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
                 std::cerr<<"Can not create minimizer"<<std::endl;
                 exit(-1);
         }
-	std::cout<<"fit constructed"<<std::endl;
+//	std::cout<<"fit constructed"<<std::endl;
 }
 
 TrackFitMinimizer::~TrackFitMinimizer(){
@@ -67,11 +67,16 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 		int channel = (*hit)->GetChannelID();
 		double DOCA = CDCGeom::Get().GetDOCA(trkPosZ0, trkDir, channel);
 		double driftTime = (*hit)->GetDriftTime(0);
-		double driftDistance = CalibInfo::Get().GetRAtT(driftTime);
-		double sigma = CalibInfo::Get().GetSpatialResolution(driftDistance);
-		chi2 += pow(DOCA - driftDistance, 2) / pow(sigma, 2);
+		double t_expect = CalibInfo::Get().GetTAtR(DOCA);
+		double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
+		chi2 += pow(driftTime - t_expect, 2) / pow(sigma, 2);
 	}
 	return chi2;
+}
+
+double TrackFitMinimizer::FittingFunctionRTT0(double const* pars){
+	//Define chi2 of fFitting here
+	return 999;
 }
 
 void TrackFitMinimizer::UpdateTrack(double const* pars){

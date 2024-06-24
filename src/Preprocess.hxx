@@ -7,6 +7,7 @@
 #include <TH1.h>
 #include <TF1.h>
 #include <TLine.h>
+#include <TMarker.h>
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
 #include "RuntimeParameter.hxx"

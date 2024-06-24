@@ -152,7 +152,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 			(*hit)->SetZ(CDCGeom::Get().ChannelToMaximumZ(channel));
 		}
 		
-		std::vector<double> driftTimes = (*hit)->GetDriftTime();
+/*		std::vector<double> driftTimes = (*hit)->GetDriftTime();
 		if(XTMode == "RT"){
 			for(auto driftTime = driftTimes.begin(); driftTime != driftTimes.end(); ++driftTime){
 				(*hit)->InsertDriftDistance(CalibInfo::Get().GetRAtT(*driftTime));
@@ -164,6 +164,6 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 		else if(XTMode == "XYZT"){
 			std::cout<<std::endl;
 		}//TODO different XT mode
-	}
+*/	}
 	return track;
 }

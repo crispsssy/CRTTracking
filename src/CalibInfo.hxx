@@ -11,8 +11,8 @@
 class CalibInfo{
 public:
 	static CalibInfo& Get();
-	double const GetRAtT(double t);
-	double const GetSpatialResolution(double r);
+	double const GetTAtR(double r);
+	double const GetTimeResolution(double t);
 
 private:
 	CalibInfo(){}

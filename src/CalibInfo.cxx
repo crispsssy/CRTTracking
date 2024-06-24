@@ -14,7 +14,7 @@ CalibInfo::CalibInfo(){
 	}
 }
 */
-CalibInfo* CalibInfo::fCalibInfo = new CalibInfo();
+CalibInfo* CalibInfo::fCalibInfo = nullptr;
 
 CalibInfo& CalibInfo::Get(){
 	if(!fCalibInfo){
@@ -22,11 +22,17 @@ CalibInfo& CalibInfo::Get(){
 	}
 	return *fCalibInfo;
 }
-
-double const CalibInfo::GetRAtT(double t){
-	return 0.02 * t;
+/*
+void CalibInfo::ReadRTTable(){
+	auto store = gFile;
+	TFile* f_RT = new TFile(f_RT_path, "READ");
+	func_RT = (TF1*)f_RT->Get("func_RT"); //FIXME
+}
+*/
+double const CalibInfo::GetTAtR(double r){
+	return r/0.02;
 }
 
-double const CalibInfo::GetSpatialResolution(double r){
-	return 0.2;
+double const CalibInfo::GetTimeResolution(double t){
+	return 10.;
 }

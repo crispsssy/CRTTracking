@@ -28,6 +28,7 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	short adc[4992][32];
 	int tdcDiff[4992][32];
 	TH1I* h_tdc = new TH1I("h_tdc", "h_tdc", 2000, -2000, 0);
+	gDirectory->GetList()->Remove(h_tdc);
 	TH1S* h_pedestal[4992];
 	for(int i=0; i<4992; ++i){
 		h_pedestal[i] = new TH1S(Form("h_%d", i), Form("pedestal at ch %d", i), 200, 100, 300);
@@ -53,15 +54,26 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 		if( (iEvent+1)%5000 == 0) std::cout<<"Processed events for T0 determination: "<<iEvent+1<<std::endl;
 	}
 
-	TF1* f_T0 = new TF1("f_T0", "[0]+[1]*exp([2]*(x-[3]))/(1+exp(([4]-x)/[5]))");
-	f_T0->SetParameter(0,0);
-	f_T0->SetParameter(1,1);
-	f_T0->SetParameter(2,1);
-	std::cout<<h_tdc->GetXaxis()->GetBinCenter(h_tdc->GetMaximumBin())<<std::endl;
-	f_T0->SetParameter(3,h_tdc->GetXaxis()->GetBinCenter(h_tdc->GetMaximumBin()));
-	f_T0->SetParameter(4,h_tdc->GetXaxis()->GetBinCenter(h_tdc->GetMaximumBin()) - 40);
-	f_T0->SetParameter(5,100);
-//	h_tdc->Fit(f_T0);
+	double peakX = h_tdc->GetXaxis()->GetBinCenter(h_tdc->GetMaximumBin());
+	TF1* sigmoid = new TF1("sigmoid", "[0]/(1+exp(([1]-x)/[2]))");
+	sigmoid->SetParameter(0, h_tdc->GetMaximum());
+	sigmoid->SetParameter(1, peakX);
+	sigmoid->SetParameter(2, 1.);
+	h_tdc->Fit(sigmoid, "Q", "", peakX - 100, peakX + 300);
+
+	TF1* exponential = new TF1("exponential", "[0]*exp([1]*(x-[2]))");
+	exponential->SetParameter(0, sigmoid->GetParameter(0));
+	exponential->SetParameter(2, sigmoid->GetParameter(1));
+	h_tdc->Fit(exponential, "Q", "", peakX - 100, peakX + 300);
+
+	TF1* f_T0 = new TF1("f_T0", "[0]+[1]*(exp([2]*(x-[3]))/(1+exp(([4]-x)/[5])))");
+	f_T0->SetParameter(0,0.);
+	f_T0->SetParameter(1,sigmoid->GetParameter(0));
+	f_T0->SetParameter(2,exponential->GetParameter(1));
+	f_T0->SetParameter(3,sigmoid->GetParameter(1));
+	f_T0->SetParameter(4,sigmoid->GetParameter(1));
+	f_T0->SetParameter(5,sigmoid->GetParameter(2));
+	h_tdc->Fit(f_T0, "Q", "", peakX - 100, peakX + 300);
 	fT0 = f_T0->GetParameter(4);
 
 	for(int iCh=0; iCh<4992; ++iCh){
@@ -80,9 +92,10 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	h_tdc->Draw();
 	std::cout<<"histogram drawn"<<std::endl;
 //	f_T0->Draw();
-	TLine* l = new TLine(fT0, 0, fT0, h_tdc->GetYaxis()->GetXmax());
-	l->SetLineColor(kRed);
-	l->Draw();
+	TMarker* m = new TMarker(fT0, 0, 22);
+	m->SetMarkerColor(kRed);
+	m->SetMarkerSize(1);
+	m->Draw();
 
 	c->cd(2);
 	TH1I* h_ped = new TH1I("h_ped", "pedestal value for all channels", 200, 100, 300);

@@ -12,7 +12,7 @@ public:
 	CDCHit(int channel, double z){ fChannelID = channel, fZ = z; }
 	~CDCHit() {}
 
-	void SetHit(int fLayerID, int fCellID);
+	void InsertADC(short adc){ fADC.push_back(adc); }
 	void InsertDriftTime(double driftTime){ fDriftTime.push_back(driftTime); }
 	void SetDOCA(double DOCA){ fDOCA = DOCA; }
 	void SetZ(double z){ fZ = z; }
@@ -30,6 +30,7 @@ public:
 
 private:
 	int fChannelID = -999;
+	std::vector<short> fADC;
 	std::vector<double> fDriftTime;
 	std::vector<double> fDriftDistance;
 	double fDOCA = 0.;
