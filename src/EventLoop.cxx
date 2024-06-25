@@ -98,13 +98,13 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		}
 		double efficiency_hough = (double)remainHits_hough / numRawHits;
 		h_hough->Fill(efficiency_hough);
-/*
+
 		//For Hough transform debug
 		std::cout<<"Hough transform debug part"<<std::endl;
 		if(efficiency_hough < 0.3) std::cout<<"entry:hough efficiency "<<iEvent<<":"<<efficiency_hough<<std::endl;
 		EventDisplay::Get().DrawLineCandidates(lines, iEvent);
 		std::cout<<"Hough transform finished for entry "<<iEvent<<std::endl;
-*/
+
 /*		//debug for angle diff, distance between lines
 		for(auto lineOdd = lines->begin(); lineOdd != lines->end(); ++lineOdd){
 			//pick a odd layer candidate
@@ -152,13 +152,13 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		fNdf = ndf;
 		fProb = prob;
 		t_out->Fill();
-/*
+
 		//Track fitting debug part
 		std::cout<<"Track fitting debug part"<<std::endl;
 		if(tracks->size() > 2) std::cout<<"entry:numTrack "<<iEvent<<":"<<tracks->size()<<std::endl;
 		EventDisplay::Get().DrawEventDisplay(tracks, iEvent);
 		std::cout<<"3D fitting finished for entry "<<iEvent<<std::endl;
-*/
+
 
 		//release memory
 		for(auto track = tracks->begin(); track != tracks->end(); ++track){

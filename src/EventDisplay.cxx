@@ -68,7 +68,6 @@ void EventDisplay::HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int
 void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
 	TCanvas* c = new TCanvas();
 	fCanvases.push_back(c);
-//	c->HighlightConnect("HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int_t y)");
 	c->Connect("Highlighted(TVirtualPad*, TObject*, Int_t, Int_t)", "EventDisplay", this, "HighlightGraph(TVirtualPad*, TObject*, Int_t, Int_t)");
 
 	c->Divide(2,1);
@@ -99,9 +98,9 @@ void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
 	c->cd(1);
 	TH1F* frame_odd = gPad->DrawFrame(-850, -850, 850, 850);
 	frame_odd->SetTitle(Form("Event display for odd layers at entry %d", event));
+	frame_odd->GetXaxis()->SetTitle("X [mm]");
+	frame_odd->GetYaxis()->SetTitle("Y [mm]");
 	DrawCDCXY();
-	hitmap_odd->GetXaxis()->SetTitle("X [mm]");
-	hitmap_odd->GetYaxis()->SetTitle("Y [mm]");
         hitmap_odd->SetMarkerStyle(20);
         hitmap_odd->SetMarkerSize(0.4);
         hitmap_odd->SetMarkerColor(1);
@@ -112,9 +111,9 @@ void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
 	c->cd(2);
 	TH1F* frame_even = gPad->DrawFrame(-850, -850, 850, 850);
 	frame_even->SetTitle(Form("Event display for even layers at entry %d", event));
+	frame_even->GetXaxis()->SetTitle("X [mm]");
+	frame_even->GetYaxis()->SetTitle("Y [mm]");
 	DrawCDCXY();
-	hitmap_even->GetXaxis()->SetTitle("X [mm]");
-	hitmap_even->GetYaxis()->SetTitle("Y [mm]");
         hitmap_even->SetMarkerStyle(20);
         hitmap_even->SetMarkerSize(0.4);
         hitmap_even->SetMarkerColor(1);
@@ -196,6 +195,7 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 	//Draw CDC
 	TCanvas* c = new TCanvas();
 	fCanvases.push_back(c);
+	c->Connect("Highlighted(TVirtualPad*, TObject*, Int_t, Int_t)", "EventDisplay", this, "HighlightGraph(TVirtualPad*, TObject*, Int_t, Int_t)");
 	c->Divide(2,1);
 	c->cd(1);
 	TH1F* frameXY = gPad->DrawFrame(-850., -850., 850., 850.);
@@ -221,25 +221,35 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 		for(auto hit = (*track)->GetHits()->begin(); hit != (*track)->GetHits()->end(); ++hit){
 			int channel = (*hit)->GetChannelID();
 			TVector2 ROPos = CDCGeom::Get().ChannelToROPos(channel);
-			gXY->AddPoint( ROPos.X(), ROPos.Y() );
-			double residual = (*hit)->GetDOCA() - (*hit)->GetDriftDistance(0);
-			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
+			gXY->SetPoint(channel, ROPos.X(), ROPos.Y() );
+			double residual = (*hit)->GetDriftTime(0) - CalibInfo::Get().GetTAtR((*hit)->GetDOCA());
+/*			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
 			txy->SetTextColor(2 + track - tracks->begin());
 			txy->SetTextFont(43);
 			txy->SetTextSize(10);
-			gZY->AddPoint( (*hit)->GetZ(), CDCGeom::Get().ChannelToROPos(channel).Y() );
-			TLatex* tzy = new TLatex((*hit)->GetZ(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
+*/			gZY->SetPoint(channel, (*hit)->GetZ(), CDCGeom::Get().ChannelToROPos(channel).Y() );
+/*			TLatex* tzy = new TLatex((*hit)->GetZ(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
 			tzy->SetTextColor(2 + track - tracks->begin());
 			tzy->SetTextFont(43);
 			tzy->SetTextSize(10);
-
+*/
 			c->cd(1);
-			txy->Draw("SAME");
+//			txy->Draw("SAME");
 			gPad->Update();
-			std::cout<<"Drawn hit info: ch:z:residual "<<channel<<":"<<(*hit)->GetZ()<<":"<<residual<<std::endl;
+//			std::cout<<"Drawn hit info: ch:z:t_expect:residual "<<channel<<":"<<(*hit)->GetZ()<<":"<<CalibInfo::Get().GetTAtR((*hit)->GetDOCA())<<":"<<residual<<std::endl;
 			c->cd(2);
-			tzy->Draw("SAME");
+//			tzy->Draw("SAME");
 			gPad->Update();
+		}
+		for(int i=0; i<gXY->GetN(); ++i){
+			double x, y = 0.;
+			gXY->GetPoint(i, x, y);
+			if(x == 0 && y == 0) gXY->SetPoint(i, 99999, 99999);
+		}
+		for(int i=0; i<gZY->GetN(); ++i){
+			double x, y = 0.;
+			gZY->GetPoint(i, x, y);
+			if(x == 0 && y == 0) gZY->SetPoint(i, 99999, 99999);
 		}
 
 		gXY->SetMarkerStyle(20);
@@ -256,10 +266,12 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 		gXY->Draw("PSAME");
 		lXY->Draw("SAME");
 		gPad->Update();
+		gXY->SetHighlight();
 		c->cd(2);
 		gZY->Draw("PSAME");
 		lZY->Draw("SAME");
 		gPad->Update();
+		gZY->SetHighlight();
 	}
 
 	std::cout<<"Drawn event display"<<std::endl;

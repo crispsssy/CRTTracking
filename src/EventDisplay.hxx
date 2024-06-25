@@ -16,6 +16,7 @@
 #include "CDCGeom.hxx"
 #include "CDCLineCandidate.hxx"
 #include "RuntimeParameter.hxx"
+#include "CalibInfo.hxx"
 
 class EventDisplay
 {
