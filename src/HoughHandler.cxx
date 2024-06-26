@@ -96,7 +96,6 @@ CDCLineCandidate* HoughHandler::FindCandidate(TH2D* hist, bool oddEven){
 	double theta = hist->GetXaxis()->GetBinCenter(binX);
 	double rho = hist->GetYaxis()->GetBinCenter(binY);
 	double maxVal = hist->GetBinContent(binX, binY);
-	double phi = theta + TMath::Pi() / 2;
 //	std::cout<<"Peak at theta:rho "<<theta<<":"<<rho<<std::endl;
 
 	TVector3 pos(rho * cos(theta), rho * sin(theta), 0);

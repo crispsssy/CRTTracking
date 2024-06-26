@@ -32,15 +32,16 @@ void TrackFitMinimizer::TrackFitting(){
 	TVector3 pocaW;
 	CDCGeom::Get().GetPOCA(fTrack->GetPos(), fTrack->GetDir(), TVector3(0., 0., 0.), TVector3(0., 0., 1.), pocaT, pocaW);
 	TVector2 pocaTXY(pocaT.X(), pocaT.Y());
-        fFit->SetVariable(0,     "rho",          pocaTXY.Mod(),                             0.001);
-        fFit->SetVariable(1,     "phi",     	 fTrack->GetDir().Phi(),                      0.001);
-        fFit->SetVariable(2,     "alpha",        atan2(pocaT.Y(), pocaT.Z()),               0.001);
-        fFit->SetVariable(3,     "theta",        fTrack->GetDir().Theta(),                  0.001);
+	double phi = atan2(pocaT.Y(), pocaT.X()) + TMath::Pi() / 2;
+        fFit->SetVariable(0,     "rho",          pocaTXY.Mod(),                             0.0001);
+        fFit->SetVariable(1,     "phi",     	 phi,                                       0.0001);
+        fFit->SetVariable(2,     "alpha",        atan2(pocaT.Y(), pocaT.Z()),               0.0001);
+        fFit->SetVariable(3,     "theta",        fTrack->GetDir().Theta(),                  0.0001);
         fFit->SetVariableLimits(0,       0.,             850.);
-        fFit->SetVariableLimits(1,       0.,             TMath::Pi()*2);
-        fFit->SetVariableLimits(2,       -TMath::Pi()*2,   TMath::Pi()*2);
-        fFit->SetVariableLimits(3,       0.,             TMath::Pi()*2);
-	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<fTrack->GetDir().Phi()<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
+        fFit->SetVariableLimits(1,       -TMath::Pi()*2,             TMath::Pi()*2);
+        fFit->SetVariableLimits(2,       -TMath::Pi()*2,   	     TMath::Pi()*2);
+        fFit->SetVariableLimits(3,       -TMath::Pi()*2,             TMath::Pi()*2);
+	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<phi<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
 
 //	std::cout<<"Start minimize with TMinuit2"<<std::endl;
         fFit->Minimize();
@@ -69,6 +70,7 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 	TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
 	TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 //	std::cout<<"px:py:pz : alpha:phi:theta "<<trkPos.X()<<":"<<trkPos.Y()<<":"<<trkPos.Z()<<" : "<<alpha<<":"<<trkDir.Phi()<<":"<<trkDir.Theta()<<std::endl;
+	std::cout<<"px:py:pz : phi:theta "<<trkPos.X()<<":"<<trkPos.Y()<<":"<<trkPos.Z()<<" : "<<":"<<trkDir.Phi()<<":"<<trkDir.Theta()<<std::endl;
 
 //	std::cout<<"start to loop over hits to calculate chi2"<<std::endl;
 	for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
@@ -76,11 +78,11 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 		double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
 		double driftTime = (*hit)->GetDriftTime(0);
 		double t_expect = CalibInfo::Get().GetTAtR(DOCA);
-//		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
+		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
 		double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
 		chi2 += pow(driftTime - t_expect, 2) / pow(sigma, 2);
 	}
-//	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
+	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
 	return chi2;
 }
 
@@ -102,6 +104,7 @@ void TrackFitMinimizer::UpdateTrack(double const* pars){
 	fTrack->SetPos(trkPos);
 	fTrack->SetDir(trkDir);
 	std::cout<<"updated track rho:phi:z:alpha:theta "<<rho<<":"<<phi<<":"<<rho*sin(phi_poca)/tan(alpha)<<":"<<alpha<<":"<<theta<<std::endl;
+//	std::cout<<"updated track rho:phi:z:theta "<<rho<<":"<<phi<<":"<<z<<":"<<theta<<std::endl;
 
 	if(XTMode == "RT"){
 		//update hit position at z
