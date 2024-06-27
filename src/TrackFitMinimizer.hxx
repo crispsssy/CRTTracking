@@ -16,6 +16,7 @@ public:
 	TrackFitMinimizer(CDCLineCandidate* track);
 	~TrackFitMinimizer();
 	void TrackFitting();
+	void TrackFittingRTT0();
 	double GetChi2();
 
 private:

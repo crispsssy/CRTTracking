@@ -48,6 +48,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 		CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
 		TrackFitMinimizer fit(track);
 		fit.TrackFitting();
+//		fit.TrackFittingRTT0();
 		tracks->push_back(track);
 	}
 
@@ -88,12 +89,8 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 	TVector3 posOdd = lineOdd->GetPos();
 	TVector3 posEven = lineEven->GetPos();
 	TVector3 pos = ( posOdd + posEven) * 0.5;
-	TVector3 dirOdd = lineOdd->GetDir();
-	TVector3 dirEven = lineEven->GetDir();
-	double phiOdd = dirOdd.Phi();
-	if(phiOdd < 0) phiOdd += TMath::Pi();
-	double phiEven = dirEven.Phi();
-	if(phiEven < 0) phiEven += TMath::Pi();
+	double phiOdd = lineOdd->GetDir().Phi();
+	double phiEven = lineEven->GetDir().Phi();
 	double phi = (phiOdd + phiEven) / 2;
 //	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
@@ -109,9 +106,10 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
 	double cdcLength = CDCGeom::Get().GetCDCLength();
 	double projectZ = (disBottum - disTop) / fMaxDistanceEO * cdcLength;
 	double theta = atan2(1750., projectZ);
+	if(sin(phi) < 0 && theta < TMath::Pi() / 2) theta = TMath::Pi() - theta;
+	if(sin(phi) > 0 && theta > TMath::Pi() / 2) theta = TMath::Pi() - theta;
 //	std::cout<<"xOddBottum:xEvenBottum:xOddTop:xEvenTop:projectZ "<<xOddBottum<<":"<<xEvenBottum<<":"<<xOddTop<<":"<<xEvenTop<<":"<<projectZ<<std::endl;
 //	std::cout<<"disBottum:disTop:projectZ "<<disBottum<<":"<<disTop<<":"<<projectZ<<std::endl;
-//	std::cout<<"phi:theta "<<phi<<":"<<theta<<std::endl;
 	TVector3 dir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
 	track->SetDir(dir);
 
