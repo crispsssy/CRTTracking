@@ -9,6 +9,7 @@ namespace RuntimePar
 	//Basic information
 	extern std::string f_in_path;
 	extern int runNum;
+    extern bool const runMode;
 	extern int startEvent;
 	extern int const nCh;
 	extern std::string XTMode;

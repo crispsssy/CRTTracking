@@ -98,9 +98,9 @@ void CDCGeom::GetPOCA(TVector3 const& trkPos, TVector3 const& trkDir, TVector3 c
 
 	pocaT = trkPos + (wirePos - trkPos).Dot(n2) / trkDir.Dot(n2) * trkDir;
 	pocaW = wirePos + (trkPos - wirePos).Dot(n1) / wireDir.Dot(n1) * wireDir;
-	std::cout<<"trkPos:trkDir "<<trkPos.X()<<","<<trkPos.Y()<<","<<trkPos.Z()<<" : "<<trkDir.X()<<","<<trkDir.Y()<<","<<trkDir.Z()<<std::endl;
-	std::cout<<"wirPos:wireDir "<<wirePos.X()<<","<<wirePos.Y()<<","<<wirePos.Z()<<" : "<<wireDir.X()<<","<<wireDir.Y()<<","<<wireDir.Z()<<std::endl; 
-	std::cout<<"pocaT:pocaW "<<pocaT.X()<<","<<pocaT.Y()<<","<<pocaT.Z()<<" : "<<pocaW.X()<<","<<pocaW.Y()<<","<<pocaW.Z()<<std::endl;
+//	std::cout<<"trkPos:trkDir "<<trkPos.X()<<","<<trkPos.Y()<<","<<trkPos.Z()<<" : "<<trkDir.X()<<","<<trkDir.Y()<<","<<trkDir.Z()<<std::endl;
+//	std::cout<<"wirPos:wireDir "<<wirePos.X()<<","<<wirePos.Y()<<","<<wirePos.Z()<<" : "<<wireDir.X()<<","<<wireDir.Y()<<","<<wireDir.Z()<<std::endl; 
+//	std::cout<<"pocaT:pocaW "<<pocaT.X()<<","<<pocaT.Y()<<","<<pocaT.Z()<<" : "<<pocaW.X()<<","<<pocaW.Y()<<","<<pocaW.Z()<<std::endl;
 }
 
 double const CDCGeom::GetDOCA(TVector3 const& trkPos, TVector3 const& trkDir, int channel){

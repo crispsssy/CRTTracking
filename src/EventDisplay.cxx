@@ -5,6 +5,7 @@ using RuntimePar::runNum;
 using RuntimePar::startEvent;
 
 EventDisplay::EventDisplay(){
+    std::cout<<"EventDisplay mode: Draw every event display, very slow. Don't use this node to run large number of events."<<std::endl;
 	short adc[4992][32];
 	short tdcNhit[4992];
 	TFile f(f_in_path.c_str(), "READ");
@@ -223,6 +224,7 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 			TVector2 ROPos = CDCGeom::Get().ChannelToROPos(channel);
 			gXY->SetPoint(channel, ROPos.X(), ROPos.Y() );
 			double residual = (*hit)->GetDriftTime(0) - CalibInfo::Get().GetTAtR((*hit)->GetDOCA());
+			std::cout<<"channel: "<<channel<<" residual: "<<residual<<" [ns]"<<std::endl;
 /*			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
 			txy->SetTextColor(2 + track - tracks->begin());
 			txy->SetTextFont(43);

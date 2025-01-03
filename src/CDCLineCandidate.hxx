@@ -22,9 +22,19 @@ public:
 	void SetPos(TVector3 pos) { fPos = pos; }
 	void SetDir(TVector3 dir) { fDir = dir; }
 	void SetChi2(double chi2) { fChi2 = chi2; }
+	void SetNdf(int ndf) { fNdf = ndf; }
+	void SetRhoError(double err_rho){ fErr_rho = err_rho; }
+	void SetPhiError(double err_phi){ fErr_phi = err_phi; }
+	void SetAlphaError(double err_alpha){ fErr_alpha = err_alpha; }
+	void SetThetaError(double err_theta){ fErr_theta = err_theta; }
 	inline TVector3 const& GetPos() const { return fPos; }
 	inline TVector3 const& GetDir() const { return fDir; }
 	inline double const GetChi2() const { return fChi2; }
+	inline int const GetNdf() const { return fNdf; }
+	inline double const GetRhoError() const { return fErr_rho; }
+	inline double const GetPhiError() const { return fErr_phi; }
+	inline double const GetAlphaError() const { return fErr_alpha; }
+	inline double const GetThetaError() const { return fErr_theta; }
 	CDCHitContainer* GetHits() const { return fHits; }
 	CDCHit* GetHit(int const hit_index) const { return fHits->at(hit_index); }
 	inline bool const GetOddEven() const { return fOddEven; }
@@ -42,6 +52,11 @@ private:
 	TVector3 fDir;
 	CDCHitContainer* fHits = nullptr;
 	double fChi2 = 99999.;
+	int fNdf = 0;
+	double fErr_rho;
+	double fErr_phi;
+	double fErr_alpha;
+	double fErr_theta;
 };
 
 class CDCLineCandidateContainer : public std::vector<CDCLineCandidate*>

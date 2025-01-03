@@ -40,14 +40,16 @@ void TrackFitMinimizer::TrackFitting(){
         fFit->SetVariableLimits(1,       -TMath::Pi()*2,             TMath::Pi()*2);
         fFit->SetVariableLimits(2,       -TMath::Pi()*2,   	     TMath::Pi()*2);
         fFit->SetVariableLimits(3,       -TMath::Pi()*2,             TMath::Pi()*2);
-	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<fTrack->GetDir().Phi()<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
+//	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<fTrack->GetDir().Phi()<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
 
 //	std::cout<<"Start minimize with TMinuit2"<<std::endl;
         fFit->Minimize();
 	fTrack->SetChi2( fFit->MinValue() );
+	fTrack->SetNdf( fTrack->GetHits()->size() - 4 );
 	double const* pars = fFit->X();
+	double const* errors = fFit->Errors();
 //	std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
-	UpdateTrack(pars);
+	UpdateTrack(pars, errors);
 
 }
 
@@ -84,7 +86,7 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
 	return chi2;
 }
 
-void TrackFitMinimizer::UpdateTrack(double const* pars){
+void TrackFitMinimizer::UpdateTrack(double const* pars, double const* errors){
 	double rho        = pars[0];
 	double phi        = pars[1];
 	double alpha      = pars[2];
@@ -96,7 +98,16 @@ void TrackFitMinimizer::UpdateTrack(double const* pars){
 
 	fTrack->SetPos(trkPos);
 	fTrack->SetDir(trkDir);
-	std::cout<<"updated track rho:phi:z:alpha:theta "<<rho<<":"<<phi<<":"<<rho*sin(phi_poca)/tan(alpha)<<":"<<alpha<<":"<<theta<<" "<<fTrack->GetDir().Theta()<<std::endl;
+
+	double err_rho    = errors[0];
+	double err_phi    = errors[1];
+	double err_alpha  = errors[2];
+	double err_theta  = errors[3];
+	fTrack->SetRhoError(err_rho);
+	fTrack->SetPhiError(err_phi);
+	fTrack->SetAlphaError(err_alpha);
+	fTrack->SetThetaError(err_theta);
+//	std::cout<<"updated track rho:phi:z:alpha:theta "<<rho<<":"<<phi<<":"<<rho*sin(phi_poca)/tan(alpha)<<":"<<alpha<<":"<<theta<<" "<<fTrack->GetDir().Theta()<<std::endl;
 //	std::cout<<"updated track rho:phi:z:theta "<<rho<<":"<<phi<<":"<<z<<":"<<theta<<std::endl;
 
 	if(XTMode == "RT"){
@@ -156,8 +167,9 @@ void TrackFitMinimizer::TrackFittingRTT0(){
         fFit->Minimize();
         fTrack->SetChi2( fFit->MinValue() );
         double const* pars = fFit->X();
+	double const* errors = fFit->Errors();
 //      std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
-        UpdateTrack(pars);
+        UpdateTrack(pars, errors);
 
 }
 

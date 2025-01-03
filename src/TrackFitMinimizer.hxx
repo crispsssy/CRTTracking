@@ -22,7 +22,7 @@ public:
 private:
 	double FittingFunctionRT(double const* pars);
 	double FittingFunctionRTT0(double const* pars);
-	void UpdateTrack(double const* pars);
+	void UpdateTrack(double const* pars, double const* errors);
 	void Optimize();
 
 	CDCLineCandidate* fTrack = nullptr;

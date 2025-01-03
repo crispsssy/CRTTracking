@@ -8,6 +8,7 @@ link_directories(${ROOT_LIBRARY_DIR})
 
 #Make dictionaries
 ROOT_GENERATE_DICTIONARY(${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay ${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay.hxx LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/EventDisplay_LinkDef.h)
+ROOT_GENERATE_DICTIONARY(${CMAKE_CURRENT_SOURCE_DIR}/src/G__STL_Dictionary ${CMAKE_CURRENT_SOURCE_DIR}/src/stl_dictionary.hxx LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/stl_dictionary_LinkDef.h)
 
 set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/CDCGeom.cxx
@@ -20,7 +21,8 @@ set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitHandler.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizer.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
-		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx)
+		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx
+		${CMAKE_CURRENT_SOURCE_DIR}/src/G__STL_Dictionary.cxx)
 add_library(Tracking SHARED ${SOURCES})
 target_include_directories(Tracking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(Tracking ${ROOT_LIBRARIES} ROOT::Gui)
