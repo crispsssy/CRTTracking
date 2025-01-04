@@ -80,7 +80,7 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
-        chi2 += pow(driftTime - t_expect, 2) / pow(sigma, 2);
+        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
     //	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
     return chi2;
