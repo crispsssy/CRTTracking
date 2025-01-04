@@ -15,21 +15,21 @@
 
 class TrackFitHandler{
 public:
-	static TrackFitHandler& Get();
-	CDCLineCandidateContainer* Find3DTracks(CDCLineCandidateContainer* lines);
+    static TrackFitHandler& Get();
+    CDCLineCandidateContainer* Find3DTracks(CDCLineCandidateContainer* lines);
 
 private:
-	TrackFitHandler();
-	TrackFitHandler(TrackFitHandler const& src);
-	TrackFitHandler& operator=(TrackFitHandler const& rhs);
+    TrackFitHandler();
+    TrackFitHandler(TrackFitHandler const& src);
+    TrackFitHandler& operator=(TrackFitHandler const& rhs);
 
-	static TrackFitHandler* fTrackFitHandler;
+    static TrackFitHandler* fTrackFitHandler;
 
-	bool IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
-	CDCLineCandidate* FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
+    bool IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
+    CDCLineCandidate* FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
 
-	double fMaxDistanceEO = 300; //mm distance between even and odd layer lines
-	double fMaxPhiDiff = 1.; //rad
+    double fMaxDistanceEO = 300; //mm distance between even and odd layer lines
+    double fMaxPhiDiff = 1.; //rad
 };
 
 #endif
