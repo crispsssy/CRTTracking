@@ -13,11 +13,13 @@ public:
 	~CDCHit() {}
 
 	void InsertADC(short adc){ fADC.push_back(adc); }
+    void SetADCs(std::vector<short> const& adcs){ fADC = adcs; }
 	void InsertDriftTime(double driftTime){ fDriftTime.push_back(driftTime); }
 	void SetDOCA(double DOCA){ fDOCA = DOCA; }
 	void SetZ(double z){ fZ = z; }
 	bool IncreaseTDCIndex();
 	void InsertDriftDistance(double dis){ fDriftDistance.push_back(dis); }
+    std::vector<short> const& GetADCs() const { return fADC; }
 	int const GetChannelID() const { return fChannelID; }
 	double const GetDriftTime(int index) const { return fDriftTime.at(index); }
 	std::vector<double> const GetDriftTime() const { return fDriftTime; }

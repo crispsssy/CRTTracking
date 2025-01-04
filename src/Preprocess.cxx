@@ -137,7 +137,40 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 	}
 	
 	if(hit->GetDriftTime().size() == 0) return nullptr;
-	else return hit;
+
+    //Fill ADCs
+    hit->SetADCs(thisADC);
+    //Frequency domain filter
+    if(FrequencyDomainFilter(hit)){
+        delete hit;
+        hit = nullptr;
+    }
+	return hit;
+}
+
+bool PreProcess::FrequencyDomainFilter(CDCHit* hit){
+    bool filter = false;
+    int chID = hit->GetChannelID();
+    std::vector<short> adcs = hit->GetADCs();
+    TH1S h_waveform("h_waveform", "h_waveform", 33, -0.5, 32.5);
+    TH1* h_freq = nullptr;
+    for(auto adc = adcs.begin(); adc != adcs.end(); ++adc){
+        h_waveform.Fill(adc - adcs.begin(), *adc);
+    }
+    h_freq = h_waveform.FFT(h_freq, "MAG");
+    //Get rid of DC component
+    h_freq->SetBinContent(1, 0);
+    //Get rid of negative component
+    h_freq->GetXaxis()->SetRange(2, 16);
+    //judge if peak fall in filter range
+    double peak = h_freq->GetBinCenter(h_freq->GetMaximumBin());
+    if(peak > 11 && peak < 13){
+//        std::cout<<"channel "<<hit->GetChannelID()<<" found peak "<<peak<<" at frequency domain, filtered."<<std::endl;
+        filter = true;
+    }
+    delete h_freq;
+    h_freq = nullptr;
+    return filter;
 }
 
 void PreProcess::CheckNumHits(CDCHitContainer* hits){
