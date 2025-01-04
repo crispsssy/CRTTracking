@@ -162,6 +162,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
                 else if(XTMode == "XYZT"){
                 std::cout<<std::endl;
                 }//TODO different XT mode
-         */	}
-        return track;
+         */	
+    }
+    return track;
 }
