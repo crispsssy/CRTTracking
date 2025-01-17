@@ -30,5 +30,7 @@ target_link_libraries(Tracking ${ROOT_LIBRARIES} ROOT::Gui)
 add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cxx)
 target_link_libraries(CRTTracking PUBLIC Tracking)
 
+target_compile_definitions(Tracking PRIVATE XT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/xt")
+
 install(TARGETS CRTTracking
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

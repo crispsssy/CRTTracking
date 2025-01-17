@@ -35,6 +35,11 @@ namespace RuntimePar
 	extern double const minRho;
 	extern double const maxRho;
 	extern double const dRho;
+
+    //for CalibInfo
+    extern double const XT_reso_x;
+    extern double const XT_reso_y;
+    extern int const XT_nshift;
 }
 
 #endif

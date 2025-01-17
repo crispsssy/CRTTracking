@@ -75,8 +75,8 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
     //	std::cout<<"start to loop over hits to calculate chi2"<<std::endl;
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
-        double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
         double driftTime = (*hit)->GetDriftTime(0);
+        double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
