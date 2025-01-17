@@ -23,7 +23,13 @@ void TrackFitMinimizer::TrackFitting(){
     fFit->SetPrintLevel(-1);
 
     std::function<double(double const*)> func = [this](double const* pars){
-        return this->FittingFunctionRT(pars);
+        if(XTMode == "RT"){
+            return this->FittingFunctionRT(pars);
+        }
+        else if(XTMode == "XYZT"){
+            return this->FittingFunctionXYZT(pars);
+        }
+        else return 0;
     };
     ROOT::Math::Functor functionRT(func, 4);
     fFit->SetFunction(functionRT);
@@ -83,6 +89,31 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
     //	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
+    return chi2;
+}
+
+double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
+{
+    double rho        = pars[0];
+    double phi        = pars[1];
+    double alpha      = pars[2];
+    double theta      = pars[3];
+    double chi2 = 0.;
+    double phi_poca = phi - TMath::Pi() / 2;
+    TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
+    TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    TVector2 pos_cell;
+
+    for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
+        int channel = (*hit)->GetChannelID();
+        double driftTime = (*hit)->GetDriftTime(0);
+        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(trkPos, trkDir, channel);
+        double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
+        double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
+        //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
+        double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
+        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
+    }
     return chi2;
 }
 
