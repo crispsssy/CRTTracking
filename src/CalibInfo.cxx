@@ -61,8 +61,9 @@ double const CalibInfo::GetTAtR(double r){
 
 double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 {
-    int index = (shift + 0.45) / 0.01 + 0.5;
-    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
+    double shift_cm = shift / 10;
+    int index = (shift_cm + 0.45) / 0.01 + 0.5;
+//    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
     auto itr = graphs_x2t.find(index);
     if(itr == graphs_x2t.end()){
         std::cout<<"xt map out of range, something is wrong."<<std::endl;

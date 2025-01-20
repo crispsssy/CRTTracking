@@ -29,7 +29,7 @@ void TrackFitMinimizer::TrackFitting(){
         else if(XTMode == "XYZT"){
             return this->FittingFunctionXYZT(pars);
         }
-        else return 0;
+        else return 0.;
     };
     ROOT::Math::Functor functionRT(func, 4);
     fFit->SetFunction(functionRT);
@@ -107,7 +107,7 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
-        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(trkPos, trkDir, channel);
+        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(trkPos, channel);
         double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
         double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
         //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
@@ -141,27 +141,15 @@ void TrackFitMinimizer::UpdateTrack(double const* pars, double const* errors){
     //	std::cout<<"updated track rho:phi:z:alpha:theta "<<rho<<":"<<phi<<":"<<rho*sin(phi_poca)/tan(alpha)<<":"<<alpha<<":"<<theta<<" "<<fTrack->GetDir().Theta()<<std::endl;
     //	std::cout<<"updated track rho:phi:z:theta "<<rho<<":"<<phi<<":"<<z<<":"<<theta<<std::endl;
 
-    if(XTMode == "RT"){
-        //update hit position at z
-        for(auto hit = fTrack->GetHits()->begin(); hit!= fTrack->GetHits()->end(); ++hit){
-            int channel = (*hit)->GetChannelID();
-            TVector3 pocaT;
-            TVector3 pocaW;
-            CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
-            double DOCA = (pocaT - pocaW).Mag();
-            (*hit)->SetZ(pocaW.Z());
-            (*hit)->SetDOCA(DOCA);
-        }
-    }
-    else if(XTMode == "RZT"){
-        std::cout<<std::endl;
-    }
-    else if(XTMode == "XYZT"){
-        std::cout<<std::endl;
-    }
-    else{
-        std::cout<<"No such kind of XT mode!!"<<std::endl;
-        exit(-1);
+    //update hit position at z
+    for(auto hit = fTrack->GetHits()->begin(); hit!= fTrack->GetHits()->end(); ++hit){
+        int channel = (*hit)->GetChannelID();
+        TVector3 pocaT;
+        TVector3 pocaW;
+        CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
+        double DOCA = (pocaT - pocaW).Mag();
+        (*hit)->SetZ(pocaW.Z());
+        (*hit)->SetDOCA(DOCA);
     }
 }
 
