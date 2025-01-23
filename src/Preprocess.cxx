@@ -3,6 +3,7 @@
 PreProcess::PreProcess(){
 	fADCSumCut = RuntimePar::adcSumCut;
 	fTDCCut = RuntimePar::tdcCut;
+    fMaxDriftTime = RuntimePar::maxDriftTime;
 	fNumHitCut = RuntimePar::numHitCut;
 	fADCSumThreshold = RuntimePar::adcSumThreshold;
 	fADCSumCutAtTDC = RuntimePar::adcSumCutAtTDC;
@@ -120,6 +121,11 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 			return nullptr;
 		}
 	}
+
+    if(fMaxDriftTime != 0){
+        double driftTime = (thisTDC.at(0) - fT0) * 1000 / 960;
+        if(driftTime > fMaxDriftTime) return nullptr;
+    }
 
 	CDCHit* hit = new CDCHit(channel);
 

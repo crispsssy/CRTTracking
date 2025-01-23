@@ -34,6 +34,7 @@ private:
 	int fADCSumCutAtTDC = 400;
 	int fMaxNumHits = 320;
 	int fMinNumHits = 12;
+    double fMaxDriftTime = 0;
 
 	static PreProcess* fPreProcess;
 };

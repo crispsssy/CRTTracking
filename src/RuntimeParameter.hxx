@@ -22,6 +22,7 @@ namespace RuntimePar
 	extern bool const numHitCut;
 	extern int const minNumHits;
 	extern int const maxNumHits;
+    extern double const maxDriftTime;
 	//for Hough transform
 	extern int const maxItr;
 	extern int const coefficient; //ratio between bins of hough and fill intervals
