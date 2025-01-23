@@ -14,7 +14,8 @@ public:
 	static CalibInfo& Get();
 	double const GetTAtR(double r);
     double const GetTAtXYShift(double x, double y, double shift);
-	double const GetTimeResolution(double t);
+	double const GetTimeResolution(double t) const;
+    double const GetTimeResolution(double const x, double const y, double const shift) const;
 
 private:
 	CalibInfo();

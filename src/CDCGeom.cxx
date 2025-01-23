@@ -263,8 +263,8 @@ double CDCGeom::GetCellShift(double const z, int const channel) const
     posC = LocalPositionToCellPositionXY(TVector3(posC.X(), posC.Y(), z), channel);
 /*    std::cout<<"channelID:wireID "<<channel<<":"<<wireID<<std::endl;
     std::cout<<"layerID_all:localWireID_all:localWireID_all_C "<<layerID_all<<":"<<localWireID_all<<":"<<localWireID_all_C<<std::endl
-             <<"pos_C ("<<posC.X()<<","<<posC.Y()<<")"<<std::endl;
-             */
+             <<"pos_C ("<<posC.X()<<","<<posC.Y()<<") z = "<<z<<std::endl;
+*/             
     return posC.X();
 }
 

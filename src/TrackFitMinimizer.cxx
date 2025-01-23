@@ -111,7 +111,7 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
         double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
         double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
         //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
-        double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
+        double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
     return chi2;

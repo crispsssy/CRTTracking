@@ -48,6 +48,7 @@ void CalibInfo::ReadXTTable(){
             t_XT->GetEntry(iEvent);
             graph_xt->AddPoint(x0 * 10, y0 * 10, t1); //cm to mm
         }
+        graph_xt->AddPoint(0., 0., 1e-9);
         graphs_x2t[iShift] = graph_xt;
     }
     std::cout<<"Successfully read XT files"<<std::endl;
@@ -66,12 +67,31 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 //    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
     auto itr = graphs_x2t.find(index);
     if(itr == graphs_x2t.end()){
-        std::cout<<"xt map out of range, something is wrong."<<std::endl;
-        exit(1);
+        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
+        return 999999.;
     }
-    return itr->second->Interpolate(x, y);
+    double t = itr->second->Interpolate(x, y);
+    if(t == 0) t = 9999.;
+    return t;
 }
 
-double const CalibInfo::GetTimeResolution(double t){
+double const CalibInfo::GetTimeResolution(double t) const
+{
 	return 10.;
+}
+
+double const CalibInfo::GetTimeResolution(double const x, double const y, double const shift) const
+{
+    double shift_cm = shift / 10;
+    int index = (shift_cm + 0.45) / 0.01 + 0.5;
+//    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
+    auto itr = graphs_x2t.find(index);
+    if(itr == graphs_x2t.end()){
+        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
+        return 1e-9;
+    }
+    double t = itr->second->Interpolate(x, y);
+    double sigma = sqrt(x*x + y*y) * 15.;
+    if(t == 0) sigma = 1e-9;
+    return sigma;
 }
