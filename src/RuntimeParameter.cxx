@@ -18,7 +18,7 @@ namespace RuntimePar
 	bool const numHitCut = true;
 	int const minNumHits = 12;
 	int const maxNumHits = 640;
-    double const maxDriftTime = 0;
+    double const maxDriftTime = 400;
 	//for Hough transform
 	int const maxItr = 4;
 	int const coefficient = 8; //ratio between bins of hough and fill intervals

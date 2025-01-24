@@ -224,7 +224,7 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 			TVector2 ROPos = CDCGeom::Get().ChannelToROPos(channel);
 			gXY->SetPoint(channel, ROPos.X(), ROPos.Y() );
 			double residual = (*hit)->GetDriftTime(0) - CalibInfo::Get().GetTAtR((*hit)->GetDOCA());
-			std::cout<<"channel: "<<channel<<" residual: "<<residual<<" [ns]"<<std::endl;
+			std::cout<<"channel: "<<channel<<" driftTime: "<<(*hit)->GetDriftTime(0)<<" [ns] residual: "<<residual<<" [ns]"<<std::endl;
 /*			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
 			txy->SetTextColor(2 + track - tracks->begin());
 			txy->SetTextFont(43);

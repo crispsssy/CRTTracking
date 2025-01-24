@@ -68,10 +68,10 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
     auto itr = graphs_x2t.find(index);
     if(itr == graphs_x2t.end()){
         std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
-        return 999999.;
+        return 9999. * sqrt(x*x + y*y);
     }
     double t = itr->second->Interpolate(x, y);
-    if(t == 0) t = 9999.;
+    if(t == 0) t = 9999. * sqrt(x*x + y*y);
     return t;
 }
 
@@ -88,10 +88,10 @@ double const CalibInfo::GetTimeResolution(double const x, double const y, double
     auto itr = graphs_x2t.find(index);
     if(itr == graphs_x2t.end()){
         std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
-        return 1e-9;
+        return sqrt(x*x + y*y) * 15.;
     }
     double t = itr->second->Interpolate(x, y);
     double sigma = sqrt(x*x + y*y) * 15.;
-    if(t == 0) sigma = 1e-9;
+    if(t == 0) sigma = 200.;
     return sigma;
 }

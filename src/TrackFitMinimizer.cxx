@@ -1,5 +1,6 @@
 #include "TrackFitMinimizer.hxx"
 
+using RuntimePar::runMode;
 using RuntimePar::XTMode;
 
 TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
@@ -20,7 +21,7 @@ void TrackFitMinimizer::TrackFitting(){
     if(!fTrack) return;
 
     fFit->SetTolerance(0.001);
-    fFit->SetPrintLevel(-1);
+    fFit->SetPrintLevel(runMode);
 
     std::function<double(double const*)> func = [this](double const* pars){
         if(XTMode == "RT"){
@@ -54,7 +55,7 @@ void TrackFitMinimizer::TrackFitting(){
     fTrack->SetNdf( fTrack->GetHits()->size() - 4 );
     double const* pars = fFit->X();
     double const* errors = fFit->Errors();
-    //	std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
+    	std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
     UpdateTrack(pars, errors);
 
 }
