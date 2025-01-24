@@ -17,6 +17,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	short tdcNhit[4992];
 	short adc[4992][32];
 	int tdcDiff[4992][32];
+    int tdcDiff0[48][32];
 	TFile* f_in = new TFile(f_in_path.c_str(), "READ");
 	TTree* t_in = (TTree*)f_in->Get("RECBE");
 	if(numEvent - startEvent > t_in->GetEntries()) numEvent = t_in->GetEntries();
@@ -25,6 +26,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 
 	t_in->SetBranchAddress("tdcNhit", &tdcNhit);
 	t_in->SetBranchAddress("tdcDiff", &tdcDiff);
+	t_in->SetBranchAddress("tdcDiff0", &tdcDiff0);
 	t_in->SetBranchAddress("adc", &adc);
 
 	//output file config
@@ -72,7 +74,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 				std::vector<int> thisTDC;
 				for(int iSample = 0; iSample < 32; ++iSample){
 					thisADC.push_back(adc[iCh][iSample]);
-					thisTDC.push_back(tdcDiff[iCh][iSample]);
+					thisTDC.push_back(tdcDiff[iCh][iSample] - tdcDiff0[0][0]);
 				}
 
 				CDCHit* rawHit = new CDCHit(iCh);

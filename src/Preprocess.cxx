@@ -28,21 +28,23 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	short tdcNhit[4992];
 	short adc[4992][32];
 	int tdcDiff[4992][32];
-	TH1I* h_tdc = new TH1I("h_tdc", "h_tdc", 2000, -2000, 0);
+    int tdcDiff0[48][32];
+	TH1I* h_tdc = new TH1I("h_tdc", "h_tdc", 2000, -1000, 1000);
 	gDirectory->GetList()->Remove(h_tdc);
 	TH1S* h_pedestal[4992];
 	for(int i=0; i<4992; ++i){
 		h_pedestal[i] = new TH1S(Form("h_%d", i), Form("pedestal at ch %d", i), 200, 100, 300);
 	}
 	t_in->SetBranchAddress("tdcNhit", &tdcNhit);
-        t_in->SetBranchAddress("tdcDiff", &tdcDiff);
+    t_in->SetBranchAddress("tdcDiff", &tdcDiff);
+    t_in->SetBranchAddress("tdcDiff0", &tdcDiff0);
 	t_in->SetBranchAddress("adc", &adc);
 
 	for(int iEvent=0; iEvent<5000; ++iEvent){  //FIXME new use 5000 entries
 		t_in->GetEntry(iEvent);
 		for(int iCh = 0; iCh<4992; ++iCh){
 			if(tdcNhit[iCh] > 0){
-				h_tdc->Fill(tdcDiff[iCh][0]);
+				h_tdc->Fill(tdcDiff[iCh][0] - tdcDiff0[0][0]);
 //				std::cout<<"entry:iCh:tdcDiff "<<iEvent<<":"<<iCh<<":"<<tdcDiff[iCh][0]<<std::endl;
 			}
 			else{
