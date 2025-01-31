@@ -26,7 +26,8 @@ private:
 
     void ReadXTTable();
 
-    std::map<int, std::shared_ptr<TGraph2D>> graphs_x2t;
+    std::map<int, std::shared_ptr<TGraph2D>> graphs_x2t_mean;
+    std::map<int, std::shared_ptr<TGraph2D>> graphs_x2t_std;
 };
 
 #endif

@@ -47,7 +47,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
         }
         CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
         TrackFitMinimizer fit(track);
-        fit.TrackFitting();
+        fit.TrackFitting("RT");
         //		fit.TrackFittingRTT0();
         tracks->push_back(track);
     }

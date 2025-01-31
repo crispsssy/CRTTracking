@@ -31,25 +31,26 @@ void CalibInfo::ReadXTTable(){
     std::cout<<"XT file path is not defined"<<std::endl;
     std::string f_XT_path;
 #endif
+    std::string f_XT_name = f_XT_path + "/x2t_0.00T_1800V.root";
+    std::unique_ptr<TFile> f_XT { TFile::Open(f_XT_name.c_str(), "READ") };
+    if(!f_XT){
+        std::cout<<"Failed to open XT file "<<f_XT_name<<std::endl; exit(1);
+    }
     for(int iShift = 0; iShift < XT_nshift; ++iShift){
-        double shift_cm = -0.45 + iShift * 0.01;
-        std::string f_XT_name = f_XT_path + "/" + Form("x2t_shift%.2f_0.00T.root", shift_cm);
-        std::unique_ptr<TFile> f_XT { TFile::Open(f_XT_name.c_str(), "READ") };
-        if(!f_XT){
-            std::cout<<"Failed to open XT file "<<f_XT_name<<std::endl; exit(1);
-        }
-        std::unique_ptr<TTree> t_XT{ f_XT->Get<TTree>("t") };
-        t_XT->SetBranchAddress("x0", &x0);
-        t_XT->SetBranchAddress("y0", &y0);
-        t_XT->SetBranchAddress("t1", &t1);
+        double shift = -4.5 + iShift * 0.1;
 
-        std::shared_ptr<TGraph2D> graph_xt = std::make_shared<TGraph2D>();
-        for(int iEvent = 0; iEvent < t_XT->GetEntries(); ++iEvent){
-            t_XT->GetEntry(iEvent);
-            graph_xt->AddPoint(x0 * 10, y0 * 10, t1); //cm to mm
+        TGraph2D* graph_mean = (TGraph2D*)f_XT->Get(Form("driftTime_mean_%.2f", shift));
+        TGraph2D* graph_std = (TGraph2D*)f_XT->Get(Form("driftTime_std_%.2f", shift));
+        if(!graph_mean || !graph_std){
+            std::cerr<<"Graph can not found: "<<Form("driftTime_mean_%.2f", shift)<<std::endl;
+            exit(1);
         }
-        graph_xt->AddPoint(0., 0., 1e-9);
-        graphs_x2t[iShift] = graph_xt;
+        std::shared_ptr<TGraph2D> graph_xt_mean = std::make_shared<TGraph2D>(*graph_mean);
+        std::shared_ptr<TGraph2D> graph_xt_std = std::make_shared<TGraph2D>(*graph_std);
+        graph_xt_mean->SetDirectory(0);
+        graph_xt_std->SetDirectory(0);
+        graphs_x2t_mean[iShift] = graph_xt_mean;
+        graphs_x2t_std[iShift] = graph_xt_std;
     }
     std::cout<<"Successfully read XT files"<<std::endl;
 
@@ -62,16 +63,18 @@ double const CalibInfo::GetTAtR(double r){
 
 double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 {
-    double shift_cm = shift / 10;
-    int index = (shift_cm + 0.45) / 0.01 + 0.5;
+    double r = sqrt(x*x + y*y);
+    int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
 //    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
-    auto itr = graphs_x2t.find(index);
-    if(itr == graphs_x2t.end()){
+    auto itr = graphs_x2t_mean.find(index);
+    if(itr == graphs_x2t_mean.end()){
         std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
-        return 9999. * sqrt(x*x + y*y);
+        return r / 14.14 * 5000.;
+    }
+    if(x > 15 || x < -15 || y > 10 || y < -10){
+        return r / 14.14 * 5000.;
     }
     double t = itr->second->Interpolate(x, y);
-    if(t == 0) t = 9999. * sqrt(x*x + y*y);
     return t;
 }
 
@@ -82,16 +85,14 @@ double const CalibInfo::GetTimeResolution(double t) const
 
 double const CalibInfo::GetTimeResolution(double const x, double const y, double const shift) const
 {
-    double shift_cm = shift / 10;
-    int index = (shift_cm + 0.45) / 0.01 + 0.5;
-//    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
-    auto itr = graphs_x2t.find(index);
-    if(itr == graphs_x2t.end()){
-        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
-        return sqrt(x*x + y*y) * 15.;
+    int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
+    auto itr = graphs_x2t_std.find(index);
+    if(itr == graphs_x2t_std.end()){
+        return 100.;
     }
-    double t = itr->second->Interpolate(x, y);
-    double sigma = sqrt(x*x + y*y) * 15.;
-    if(t == 0) sigma = 200.;
+    if(x > 15 || x < -15 || y > 10 || y < -10){
+        return 100.;
+    }
+    double sigma = itr->second->Interpolate(x, y);
     return sigma;
 }

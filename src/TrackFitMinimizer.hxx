@@ -15,7 +15,7 @@ class TrackFitMinimizer{
 public:
     TrackFitMinimizer(CDCLineCandidate* track);
     ~TrackFitMinimizer();
-    void TrackFitting();
+    void TrackFitting(std::string XTMode);
     void TrackFittingRTT0();
     double GetChi2();
 

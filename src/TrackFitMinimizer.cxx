@@ -1,7 +1,6 @@
 #include "TrackFitMinimizer.hxx"
 
 using RuntimePar::runMode;
-using RuntimePar::XTMode;
 
 TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
     fTrack = track;
@@ -17,13 +16,21 @@ TrackFitMinimizer::~TrackFitMinimizer(){
     delete fFit;
 }
 
-void TrackFitMinimizer::TrackFitting(){
+void TrackFitMinimizer::TrackFitting(std::string XTMode){
     if(!fTrack) return;
 
     fFit->SetTolerance(0.001);
     fFit->SetPrintLevel(runMode);
 
-    std::function<double(double const*)> func = [this](double const* pars){
+    //Setup for minimizer
+    if(XTMode == "RT"){
+        std::cout<<"Mode RT, precision is "<<fFit->Precision()<<std::endl;
+    }
+    else if(XTMode == "XYZT"){
+        fFit->SetStrategy(2);
+    }
+
+    std::function<double(double const*)> func = [this, XTMode](double const* pars){
         if(XTMode == "RT"){
             return this->FittingFunctionRT(pars);
         }
@@ -103,18 +110,25 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
+    TVector3 pocaT;
+    TVector3 pocaW;
     TVector2 pos_cell;
 
+    static int rr = 0;
+    rr++;
+    std::cout<<"++++++++++++++++++++++++++++++minimize round: "<<rr<<std::endl;
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
-        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(trkPos, channel);
+        CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
+        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel);
         double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
         double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
-        //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
+              std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
+    std::cout<<"chi2 = "<<chi2<<std::endl;
     return chi2;
 }
 
