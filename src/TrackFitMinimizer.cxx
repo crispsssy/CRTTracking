@@ -67,11 +67,12 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
     double thetaMax = TMath::Pi()*2;
     if(XTMode == "XYZT"){
         fFit->SetStrategy(2);
+        fFit->SetMaxFunctionCalls(1e4);
         step = 1e-6;
         double dRho = 2.;
-        double dPhi = 1e-2;
-        double dAlpha = 1e-2;
-        double dTheta = 0.1;
+        double dPhi = 2e-2;
+        double dAlpha = 2e-2;
+        double dTheta = 0.2;
         rhoMin = rho - dRho;
         rhoMax = rho + dRho;
         phiMin = phi - dPhi;
@@ -80,6 +81,12 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
         alphaMax = alpha + dAlpha;
         thetaMin = theta - dTheta;
         thetaMax = theta + dTheta;
+        if(runMode){
+            std::cout<<"rho : dRho "<<rho<<":"<<dRho<<std::endl;
+            std::cout<<"phi : dPhi "<<phi<<":"<<dPhi<<std::endl;
+            std::cout<<"alpha : dAlpha "<<alpha<<":"<<dAlpha<<std::endl;
+            std::cout<<"theta : dTheta "<<theta<<":"<<dTheta<<std::endl;
+        }
     }
 
     fFit->SetVariable(0,     "rho",          rho,               step);
@@ -141,9 +148,12 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     TVector3 pocaW;
     TVector2 pos_cell;
 
-    static int rr = 0;
-    rr++;
-    std::cout<<"++++++++++++++++++++++++++++++minimize round: "<<rr<<std::endl;
+    if(runMode){
+        static int rr = 0;
+        rr++;
+        std::cout<<"++++++++++++++++++++++++++++++minimize round: "<<rr<<std::endl;
+        std::cout<<"rho : phi : alpha : theta "<<rho<<" : "<<phi<<" : "<<alpha<<" : "<<theta<<std::endl;
+    }
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
@@ -151,11 +161,13 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
         pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel);
         double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
         double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
-              std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
+        if(runMode) std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
-    std::cout<<"chi2 = "<<chi2<<std::endl;
+    if(runMode){
+        std::cout<<"chi2 = "<<chi2<<std::endl;
+    }
     return chi2;
 }
 

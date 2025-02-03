@@ -58,7 +58,6 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
     t_out->Branch("channel", &fChannel);
 
 	//Preprocess of hits
-	//f_in->cd();
 	for(int iEvent = startEvent; iEvent < startEvent+numEvent; ++iEvent){
 		t_in->GetEntry(iEvent);
 //		std::cout<<"Start process event "<<iEvent<<std::endl;
