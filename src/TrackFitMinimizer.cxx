@@ -22,14 +22,6 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
     fFit->SetTolerance(0.001);
     fFit->SetPrintLevel(runMode);
 
-    //Setup for minimizer
-    if(XTMode == "RT"){
-//        std::cout<<"Mode RT, precision is "<<fFit->Precision()<<std::endl;
-    }
-    else if(XTMode == "XYZT"){
-        fFit->SetStrategy(2);
-    }
-
     std::function<double(double const*)> func = [this, XTMode](double const* pars){
         if(XTMode == "RT"){
             return this->FittingFunctionRT(pars);
@@ -41,19 +33,7 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
     };
     ROOT::Math::Functor functionRT(func, 4);
     fFit->SetFunction(functionRT);
-
-    TVector3 pocaT;
-    TVector3 pocaW;
-    CDCGeom::Get().GetPOCA(fTrack->GetPos(), fTrack->GetDir(), TVector3(0., 0., 0.), TVector3(0., 0., 1.), pocaT, pocaW);
-    TVector2 pocaTXY(pocaT.X(), pocaT.Y());
-    fFit->SetVariable(0,     "rho",          pocaTXY.Mod(),                             0.0001);
-    fFit->SetVariable(1,     "phi",     	 fTrack->GetDir().Phi(),                    0.0001);
-    fFit->SetVariable(2,     "alpha",        atan2(pocaT.Y(), pocaT.Z()),               0.0001);
-    fFit->SetVariable(3,     "theta",        fTrack->GetDir().Theta(),                  0.0001);
-    fFit->SetVariableLimits(0,       0.,                         850.);
-    fFit->SetVariableLimits(1,       -TMath::Pi()*2,             TMath::Pi()*2);
-    fFit->SetVariableLimits(2,       -TMath::Pi()*2,   	         TMath::Pi()*2);
-    fFit->SetVariableLimits(3,       -TMath::Pi()*2,             TMath::Pi()*2);
+    SetupParameters(XTMode);
     //	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<fTrack->GetDir().Phi()<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
 
     //	std::cout<<"Start minimize with TMinuit2"<<std::endl;
@@ -66,6 +46,53 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
     UpdateTrack(pars, errors);
 
 }
+
+void TrackFitMinimizer::SetupParameters(std::string XTMode){
+    TVector3 pocaT;
+    TVector3 pocaW;
+    CDCGeom::Get().GetPOCA(fTrack->GetPos(), fTrack->GetDir(), TVector3(0., 0., 0.), TVector3(0., 0., 1.), pocaT, pocaW);
+    TVector2 pocaTXY(pocaT.X(), pocaT.Y());
+    double rho = pocaTXY.Mod();
+    double phi = fTrack->GetDir().Phi();
+    double alpha = atan2(pocaT.Y(), pocaT.Z());
+    double theta = fTrack->GetDir().Theta();
+    double step = 1e-4;
+    double rhoMin = 0.;
+    double rhoMax = 850.;
+    double phiMin = -TMath::Pi()*2;
+    double phiMax = TMath::Pi()*2;
+    double alphaMin = -TMath::Pi()*2;
+    double alphaMax = TMath::Pi()*2;
+    double thetaMin = -TMath::Pi()*2;
+    double thetaMax = TMath::Pi()*2;
+    if(XTMode == "XYZT"){
+        fFit->SetStrategy(2);
+        step = 1e-6;
+        double dRho = 2.;
+        double dPhi = 1e-2;
+        double dAlpha = 1e-2;
+        double dTheta = 0.1;
+        rhoMin = rho - dRho;
+        rhoMax = rho + dRho;
+        phiMin = phi - dPhi;
+        phiMax = phi + dPhi;
+        alphaMin = alpha - dAlpha;
+        alphaMax = alpha + dAlpha;
+        thetaMin = theta - dTheta;
+        thetaMax = theta + dTheta;
+    }
+
+    fFit->SetVariable(0,     "rho",          rho,               step);
+    fFit->SetVariable(1,     "phi",          phi,               step);
+    fFit->SetVariable(2,     "alpha",        alpha,             step);
+    fFit->SetVariable(3,     "theta",        theta,             step);
+    fFit->SetVariableLimits(0,       rhoMin,                    rhoMax);
+    fFit->SetVariableLimits(1,       phiMin,                    phiMax);
+    fFit->SetVariableLimits(2,       alphaMin,                  alphaMax);
+    fFit->SetVariableLimits(3,       thetaMin,                  thetaMax);
+}
+
+        
 
 double TrackFitMinimizer::GetChi2(){
     double const pars[4]{fTrack->GetXAtZ(0), fTrack->GetYAtZ(0.), fTrack->GetDir().Phi(), fTrack->GetDir().Theta() };

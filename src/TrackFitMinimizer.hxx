@@ -20,6 +20,7 @@ public:
     double GetChi2();
 
 private:
+    void SetupParameters(std::string XTMode);
     double FittingFunctionRT(double const* pars);
     double FittingFunctionXYZT(double const* pars);
     double FittingFunctionRTT0(double const* pars);

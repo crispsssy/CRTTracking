@@ -49,6 +49,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
         CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
         TrackFitMinimizer fit(track);
         fit.TrackFitting("RT");
+//        fit.TrackFitting("XYZT");
         //		fit.TrackFittingRTT0();
         tracks->push_back(track);
     }
@@ -151,19 +152,6 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
             (*hit)->SetZ(CDCGeom::Get().ChannelToMaximumZ(channel));
         }
 
-        /*		std::vector<double> driftTimes = (*hit)->GetDriftTime();
-                if(XTMode == "RT"){
-                for(auto driftTime = driftTimes.begin(); driftTime != driftTimes.end(); ++driftTime){
-                (*hit)->InsertDriftDistance(CalibInfo::Get().GetRAtT(*driftTime));
-                }
-                }
-                else if(XTMode == "RZT"){
-                std::cout<<std::endl;
-                }
-                else if(XTMode == "XYZT"){
-                std::cout<<std::endl;
-                }//TODO different XT mode
-         */	
     }
     return track;
 }
