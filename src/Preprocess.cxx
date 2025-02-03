@@ -1,6 +1,7 @@
 #include "Preprocess.hxx"
 
 PreProcess::PreProcess(){
+    fRunMode = RuntimePar::runMode;
 	fADCSumCut = RuntimePar::adcSumCut;
 	fTDCCut = RuntimePar::tdcCut;
     fMaxDriftTime = RuntimePar::maxDriftTime;
@@ -112,18 +113,20 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC){
 	int layer = CDCGeom::Get().ChannelToLayer(channel);
 	if(layer == 0 || layer == 19) return nullptr;
-
+    
+    //ADC sum cut
 	if(fADCSumCut){
 		short adcSum = 0;
 		for(std::vector<short>::const_iterator adc = thisADC.begin(); adc != thisADC.end(); ++adc){
 			if(*adc - fPedestal[channel] > 0) adcSum += *adc - fPedestal[channel];
 		}
 		if(adcSum < fADCSumThreshold && thisTDC.at(0) - fT0 < fADCSumCutAtTDC){
-			//	std::cout<<"abort hit at ch "<<channel<<" with adcsum "<<adcSum<<", pedestal is "<<fPedestal[channel]<<std::endl;
+			if(fRunMode) std::cout<<"abort hit at ch "<<channel<<" with adcsum "<<adcSum<<", pedestal is "<<fPedestal[channel]<<std::endl;
 			return nullptr;
 		}
 	}
 
+    //Drift time cut
     if(fMaxDriftTime != 0){
         double driftTime = (thisTDC.at(0) - fT0) * 1000 / 960;
         if(driftTime > fMaxDriftTime) return nullptr;
@@ -131,6 +134,7 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 
 	CDCHit* hit = new CDCHit(channel);
 
+    //T0 cut
 	if(fTDCCut){	
 		for(std::vector<int>::const_iterator tdc = thisTDC.begin(); tdc!= thisTDC.end(); ++tdc){
 			if(*tdc == 0) break;
@@ -152,10 +156,12 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
     if(FrequencyDomainFilter(hit)){
         delete hit;
         hit = nullptr;
+        if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" by frequency domain filter"<<std::endl;
     }
     else if(CrosstalkFilter(hit)){
         delete hit;
         hit = nullptr;
+        if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" by crosstalk filter"<<std::endl;
     }
 	return hit;
 }

@@ -1,5 +1,6 @@
 #include "TrackFitHandler.hxx"
 
+using RuntimePar::runMode;
 using RuntimePar::XTMode;
 
 TrackFitHandler::TrackFitHandler(){
@@ -67,18 +68,17 @@ bool TrackFitHandler::IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* li
     //		 <<dis<<std::endl;
     //distance cut
     if( dis > fMaxDistanceEO ){
-        //		std::cout<<"out of distance range"<<std::endl;
+        if(runMode) std::cout<<"out of distance range"<<std::endl;
         return false;
     }
     //angle difference cut
     else if( !(phiDiff < fMaxPhiDiff && phiDiff > -fMaxPhiDiff)                            &&
             !(phiDiff < TMath::Pi() + fMaxPhiDiff && phiDiff > TMath::Pi() - fMaxPhiDiff) &&
             !(phiDiff < -TMath::Pi() + fMaxPhiDiff && phiDiff > -TMath::Pi() - fMaxPhiDiff)){
-        //		std::cout<<"out of angle range"<<std::endl;
+        if(runMode) std::cout<<"out of angle range"<<std::endl;
         return false;
     }
     else{
-        //		std::cout<<"return good pair"<<std::endl;
         return true;
     }
 }
@@ -140,6 +140,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
     for(auto hit = track->GetHits()->begin(); hit != track->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         if( (*hit)->GetZ() < -1500. || (*hit)->GetZ() > 1500.){
+            if(runMode) std::cout<<"Track candidate initial Z out of range, abort. ch = "<<channel<<" Z = "<<(*hit)->GetZ()<<std::endl;
             delete track;
             return nullptr;
         }

@@ -28,6 +28,7 @@ private:
 	PreProcess& operator=(PreProcess const& rhs);
 	int fT0 = -1740;
 	short fPedestal[4992] = {0};
+    bool fRunMode = true;
 	bool fADCSumCut = true;
 	bool fTDCCut = true;
 	bool fNumHitCut = true;

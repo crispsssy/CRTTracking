@@ -1,5 +1,6 @@
 #include "HoughHandler.hxx"
 
+using RuntimePar::runMode;
 using RuntimePar::maxItr;
 using RuntimePar::coefficient; //ratio between bins of hough and fill intervals
 using RuntimePar::nbinPhi;
@@ -33,7 +34,7 @@ CDCLineCandidateContainer* HoughHandler::FindCandidates(CDCHitContainer* hits){
 	CDCLineCandidateContainer* lines = new CDCLineCandidateContainer();
 	CDCHitContainer remainHits = *hits;
 	for(int itr = 0; itr < maxItr; ++itr){
-//		std::cout<<"start "<<itr<<"th iteration of hough transform"<<std::endl;
+		if(runMode) std::cout<<"start "<<itr<<"th iteration of hough transform"<<std::endl;
 		for(std::vector<CDCHit*>::const_iterator hit = remainHits.begin(); hit != remainHits.end(); ++hit){
 			for(int iFillPhi = 0; iFillPhi < nFillPhi; ++iFillPhi){
 				int channel = (*hit)->GetChannelID();
@@ -124,14 +125,14 @@ bool HoughHandler::IsGoodCandidate(CDCLineCandidate*& lineOdd, CDCLineCandidate*
 				lineOdd->AddHit(*hit);
 				usedAt.push(hit - remainHits->begin());
 			}
-//			else std::cout<<"unused hit at channel"<<channel<<std::endl;
+			else if(runMode) std::cout<<"Abort hit at ch "<<channel<<" by distance "<<CalculateDistance(posHit3, posOdd, dirOdd)<<std::endl;
 		}
 		else{
 			if(CalculateDistance(posHit3, posEven, dirEven) < fLineDisThreshold){
                                 lineEven->AddHit(*hit);
 				usedAt.push(hit - remainHits->begin());
-                        }
-//			else std::cout<<"unused hit at channel"<<channel<<std::endl;
+            }
+			else if(runMode) std::cout<<"Abort hit at ch"<<channel<<" by distance "<<CalculateDistance(posHit3, posOdd, dirOdd)<<std::endl;
 		}
 	}
 //	std::cout<<"Finish judge if candidate is good"<<std::endl;
