@@ -148,8 +148,12 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 
     //Fill ADCs
     hit->SetADCs(thisADC);
-    //Frequency domain filter
+    //Frequency domain filter and Crosstalk filter
     if(FrequencyDomainFilter(hit)){
+        delete hit;
+        hit = nullptr;
+    }
+    else if(CrosstalkFilter(hit)){
         delete hit;
         hit = nullptr;
     }
@@ -178,6 +182,18 @@ bool PreProcess::FrequencyDomainFilter(CDCHit* hit){
     }
     delete h_freq;
     h_freq = nullptr;
+    return filter;
+}
+
+bool PreProcess::CrosstalkFilter(CDCHit* hit){
+    bool filter = false;
+    int chID = hit->GetChannelID();
+    std::vector<short> adcs = hit->GetADCs();
+    short adcMax = *std::max_element(adcs.begin(), adcs.end());
+    short adcMin = *std::min_element(adcs.begin(), adcs.end());
+    if(fabs(adcMin - fPedestal[chID]) > 0.8 * fabs(adcMax - fPedestal[chID])){
+        filter = true;
+    }
     return filter;
 }
 

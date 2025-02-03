@@ -19,6 +19,7 @@ public:
 	void DetermineT0AndPedestal(TTree* t_in);
 	CDCHit* CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC);
     bool FrequencyDomainFilter(CDCHit* hit);
+    bool CrosstalkFilter(CDCHit* hit);
 	void CheckNumHits(CDCHitContainer* hits);
 
 private:
