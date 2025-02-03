@@ -24,7 +24,7 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
 
     //Setup for minimizer
     if(XTMode == "RT"){
-        std::cout<<"Mode RT, precision is "<<fFit->Precision()<<std::endl;
+//        std::cout<<"Mode RT, precision is "<<fFit->Precision()<<std::endl;
     }
     else if(XTMode == "XYZT"){
         fFit->SetStrategy(2);
@@ -50,9 +50,9 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
     fFit->SetVariable(1,     "phi",     	 fTrack->GetDir().Phi(),                    0.0001);
     fFit->SetVariable(2,     "alpha",        atan2(pocaT.Y(), pocaT.Z()),               0.0001);
     fFit->SetVariable(3,     "theta",        fTrack->GetDir().Theta(),                  0.0001);
-    fFit->SetVariableLimits(0,       0.,             850.);
+    fFit->SetVariableLimits(0,       0.,                         850.);
     fFit->SetVariableLimits(1,       -TMath::Pi()*2,             TMath::Pi()*2);
-    fFit->SetVariableLimits(2,       -TMath::Pi()*2,   	     TMath::Pi()*2);
+    fFit->SetVariableLimits(2,       -TMath::Pi()*2,   	         TMath::Pi()*2);
     fFit->SetVariableLimits(3,       -TMath::Pi()*2,             TMath::Pi()*2);
     //	std::cout<<"rho:phi:z:alpha:theta "<<pocaTXY.Mod()<<":"<<fTrack->GetDir().Phi()<<":"<<pocaT.Z()<<":"<<atan2(pocaT.Y(),pocaT.Z())<<":"<<fTrack->GetDir().Theta()<<std::endl;
 
@@ -62,7 +62,7 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
     fTrack->SetNdf( fTrack->GetHits()->size() - 4 );
     double const* pars = fFit->X();
     double const* errors = fFit->Errors();
-    	std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
+//    std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
     UpdateTrack(pars, errors);
 
 }
@@ -93,7 +93,7 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
         double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
-        double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
+        double sigma = CalibInfo::Get().GetTimeResolution(DOCA);
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
     }
     //	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
