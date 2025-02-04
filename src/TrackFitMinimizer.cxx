@@ -70,9 +70,9 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
         fFit->SetMaxFunctionCalls(1e4);
         step = 1e-6;
         double dRho = 2.;
-        double dPhi = 2e-2;
-        double dAlpha = 2e-2;
-        double dTheta = 0.2;
+        double dPhi = 1e-2;
+        double dAlpha = 1e-2;
+        double dTheta = 0.1;
         rhoMin = rho - dRho;
         rhoMax = rho + dRho;
         phiMin = phi - dPhi;
@@ -81,12 +81,12 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
         alphaMax = alpha + dAlpha;
         thetaMin = theta - dTheta;
         thetaMax = theta + dTheta;
-        if(runMode){
-            std::cout<<"rho : dRho "<<rho<<":"<<dRho<<std::endl;
-            std::cout<<"phi : dPhi "<<phi<<":"<<dPhi<<std::endl;
-            std::cout<<"alpha : dAlpha "<<alpha<<":"<<dAlpha<<std::endl;
-            std::cout<<"theta : dTheta "<<theta<<":"<<dTheta<<std::endl;
-        }
+    }
+    if(runMode){
+        std::cout<<"rho : rhoMin : rhoMax "<<rho<<":"<<rhoMin<<":"<<rhoMax<<std::endl;
+        std::cout<<"phi : phiMin : phiMax "<<phi<<":"<<phiMin<<":"<<phiMax<<std::endl;
+        std::cout<<"alpha : alphaMin : alphaMax "<<alpha<<":"<<alphaMin<<":"<<alphaMax<<std::endl;
+        std::cout<<"theta : thetaMin : thetaMax "<<theta<<":"<<thetaMin<<":"<<thetaMax<<std::endl;
     }
 
     fFit->SetVariable(0,     "rho",          rho,               step);
@@ -107,7 +107,8 @@ double TrackFitMinimizer::GetChi2(){
 }
 
 double TrackFitMinimizer::FittingFunctionRT(double const* pars){
-    //	std::cout<<"Fitting Function RT called"<<std::endl;
+    //Abort hits that drift time larger than 400 ns since simple XT doesn't fit corner hits.
+//    	std::cout<<"Fitting Function RT called------------------------------"<<std::endl;
     //Define chi2 of fFitting here
     double rho        = pars[0];
     double phi        = pars[1];
@@ -115,15 +116,16 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
     double theta      = pars[3];
     double chi2 = 0.;
     double phi_poca = phi - TMath::Pi() / 2;
+    if(alpha == 0 ) alpha = 1e-20;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-    //	std::cout<<"px:py:pz : alpha:phi:theta "<<trkPos.X()<<":"<<trkPos.Y()<<":"<<trkPos.Z()<<" : "<<alpha<<":"<<trkDir.Phi()<<":"<<trkDir.Theta()<<std::endl;
-    //	std::cout<<"px:py:pz : phi:theta "<<trkPos.X()<<":"<<trkPos.Y()<<":"<<trkPos.Z()<<" : "<<":"<<trkDir.Phi()<<":"<<trkDir.Theta()<<std::endl;
+//    	std::cout<<"px:py:pz : alpha:phi:theta "<<trkPos.X()<<":"<<trkPos.Y()<<":"<<trkPos.Z()<<" : "<<alpha<<":"<<trkDir.Phi()<<":"<<trkDir.Theta()<<std::endl;
 
     //	std::cout<<"start to loop over hits to calculate chi2"<<std::endl;
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
+        if(driftTime > 400) continue; //drift time cut
         double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
@@ -202,8 +204,10 @@ void TrackFitMinimizer::UpdateTrack(double const* pars, double const* errors){
         TVector3 pocaW;
         CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
         double DOCA = (pocaT - pocaW).Mag();
-        (*hit)->SetZ(pocaW.Z());
+        TVector2 posCell = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel);
+        (*hit)->SetZ(pocaT.Z());
         (*hit)->SetDOCA(DOCA);
+        (*hit)->SetPosCell(posCell);
     }
 }
 

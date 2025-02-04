@@ -57,6 +57,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	t_out->Branch("err_theta", &fErr_theta);
     t_out->Branch("channel", &fChannel);
 
+    clock_t tStart = clock();
 	//Preprocess of hits
 	for(int iEvent = startEvent; iEvent < startEvent+numEvent; ++iEvent){
 		t_in->GetEntry(iEvent);
@@ -211,9 +212,10 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 			delete *hit;
 		}
 
-		if( (iEvent+1) % 1000 == 0) std::cout<<"Preprocessed events: "<<iEvent + 1 - startEvent<<std::endl;
+		if( (iEvent+1) % 100 == 0) std::cout<<"Preprocessed events: "<<iEvent + 1 - startEvent<<std::endl;
 	}
 	std::cout<<"Finished process events, now saving to output file"<<std::endl;
+    std::cout<<std::fixed<<std::setprecision(5)<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" s for looping "<<numEvent<<" events"<<std::endl;
 
 	f_in->Close();
 	f_out->cd();

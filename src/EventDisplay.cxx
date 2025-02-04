@@ -223,8 +223,11 @@ void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event
 			int channel = (*hit)->GetChannelID();
 			TVector2 ROPos = CDCGeom::Get().ChannelToROPos(channel);
 			gXY->SetPoint(channel, ROPos.X(), ROPos.Y() );
-			double residual = (*hit)->GetDriftTime(0) - CalibInfo::Get().GetTAtR((*hit)->GetDOCA());
+            TVector2 posCell = (*hit)->GetPosCell();
+            double shift = CDCGeom::Get().GetCellShift((*hit)->GetZ(), channel);
+			double residual = (*hit)->GetDriftTime(0) - CalibInfo::Get().GetTAtXYShift(posCell.X(), posCell.Y(), shift);
 			std::cout<<"channel: "<<channel<<" driftTime: "<<(*hit)->GetDriftTime(0)<<" [ns] residual: "<<residual<<" [ns]"<<std::endl;
+            std::cout<<"posCell ("<<posCell.X()<<", "<<posCell.Y()<<") doca = "<<(*hit)->GetDOCA()<<" sigma = "<<CalibInfo::Get().GetTimeResolution(posCell.X(), posCell.Y(), shift)<<std::endl;
 /*			TLatex* txy = new TLatex(ROPos.X(), ROPos.Y(), Form("#splitline{ch %d}{residual %f}", channel, residual));
 			txy->SetTextColor(2 + track - tracks->begin());
 			txy->SetTextFont(43);

@@ -110,7 +110,7 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 //    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
     auto itr = fGraphs_x2t_mean.find(index);
     if(itr == fGraphs_x2t_mean.end()){
-        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
+//        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
         return r / 14.14 * 5000.;
     }
     if(x > 15 || x < -15 || y > 10 || y < -10){

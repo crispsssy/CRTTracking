@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include <TVector2.h>
+
 class CDCHit
 {
 public:
@@ -17,6 +19,7 @@ public:
 	void InsertDriftTime(double driftTime){ fDriftTime.push_back(driftTime); }
 	void SetDOCA(double DOCA){ fDOCA = DOCA; }
 	void SetZ(double z){ fZ = z; }
+    void SetPosCell(TVector2 const& posCell){ fPosCell = posCell; }
 	bool IncreaseTDCIndex();
 	void InsertDriftDistance(double dis){ fDriftDistance.push_back(dis); }
     std::vector<short> const& GetADCs() const { return fADC; }
@@ -27,6 +30,7 @@ public:
 	double const GetZ() const { return fZ; }
 	double const GetDriftDistance(int index) const { return fDriftDistance.at(index); }
 	std::vector<double> const GetDriftDistance() const { return fDriftDistance; }
+    TVector2 const& GetPosCell() const { return fPosCell; }
 
 	void ls() const;
 
@@ -38,6 +42,7 @@ private:
 	double fDOCA = 0.;
 	double fZ = 0.;
 	unsigned int fUseTDC = 0; //determine which TDC will be used for fitting
+    TVector2 fPosCell;
 };
 
 class CDCHitContainer : public std::vector<CDCHit*>

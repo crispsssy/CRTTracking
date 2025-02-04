@@ -93,7 +93,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
     double phiOdd = lineOdd->GetDir().Phi();
     double phiEven = lineEven->GetDir().Phi();
     double phi = (phiOdd + phiEven) / 2;
-    //	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
+    	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
     //Find theta and POCA.Z of the track
     double xOddBottum, yOddBottum, xOddTop, yOddTop;

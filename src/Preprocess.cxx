@@ -129,7 +129,10 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
     //Drift time cut
     if(fMaxDriftTime != 0){
         double driftTime = (thisTDC.at(0) - fT0) * 1000 / 960;
-        if(driftTime > fMaxDriftTime) return nullptr;
+        if(driftTime > fMaxDriftTime){
+            if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" with drift time "<<driftTime<<" which exceeded maxDriftTime "<<fMaxDriftTime<<std::endl;
+            return nullptr;
+        }
     }
 
 	CDCHit* hit = new CDCHit(channel);
