@@ -8,11 +8,17 @@
 #include <TF1.h>
 #include <TGraph.h>
 #include <TGraph2D.h>
+#include <TVector3.h>
+#include <Math/Minimizer.h>
+#include <Math/Factory.h>
+#include <Math/Functor.h>
 #include "RuntimeParameter.hxx"
+#include "CDCGeom.hxx"
 
 class CalibInfo{
 public:
 	static CalibInfo& Get();
+    double const GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel);
 	double const GetTAtR(double r);
     double const GetTAtXYShift(double x, double y, double shift);
 	double const GetTimeResolution(double r) const;
@@ -27,6 +33,8 @@ private:
 
     void ReadXTTable();
     void GenerateSimpleXT();
+    void SetupMinimizer();
+    double CalculateDriftTime(double const* pars); //only for minimization usage
 
     TGraph* fSimpleXTGraph;
     TGraph* fSimpleResoGraph;
@@ -34,6 +42,11 @@ private:
     TF1* fSimpleResoFunc;
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_mean;
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_std;
+    ROOT::Math::Minimizer* fFit = nullptr;
+    double fMinimizationThreshold = 7.; //do minimization for drift time if exceed this threshold
+    TVector3 fCurrentTrkPos;
+    TVector3 fCurrentTrkDir;
+    int fCurrentChannel;
 
     //for simple XT
     int const fMaxDocaIndexXT = 94;

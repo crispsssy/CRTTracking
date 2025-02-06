@@ -17,8 +17,8 @@ CalibInfo& CalibInfo::Get(){
 CalibInfo::CalibInfo()
 {
     ReadXTTable();
+    SetupMinimizer();
 }
-
 
 void CalibInfo::ReadXTTable(){
     std::cout<<"Start reading XT files"<<std::endl;
@@ -56,6 +56,29 @@ void CalibInfo::ReadXTTable(){
     GenerateSimpleXT();
 
     gFile = store;
+}
+
+void CalibInfo::SetupMinimizer(){
+    fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
+    if(!fFit){
+        std::cerr<<"Can not create minimizer"<<std::endl;
+        exit(-1);
+    }
+
+    std::function<double(double const*)> func = [this](double const* pars){
+        return this->CalculateDriftTime(pars);
+    };
+    ROOT::Math::Functor functionRT(func, 4);
+    fFit->SetFunction(functionRT);
+}
+
+double CalibInfo::CalculateDriftTime(double const* pars){
+    //coefficient of movement from DOCA, 1 means 1 mm
+    double lambda = pars[0];
+    TVector3 pos = fCurrentTrkPos + lambda * fCurrentTrkDir;
+    TVector2 posCell = CDCGeom::Get().LocalPositionToCellPositionXY(pos, fCurrentChannel);
+    double shift = CDCGeom::Get().GetCellShift(pos.Z(), fCurrentChannel);
+    return GetTAtXYShift(posCell.X(), posCell.Y(), shift);
 }
 
 void CalibInfo::GenerateSimpleXT(){
@@ -96,6 +119,31 @@ void CalibInfo::GenerateSimpleXT(){
     fSimpleResoFunc->Write();
 }
 
+double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel){
+    TVector3 pocaT;
+    TVector3 pocaW;
+    CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
+    fCurrentTrkPos = pocaT;
+    fCurrentTrkDir = trkDir;
+    fCurrentChannel = channel;
+    double doca = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel).Mod();
+    if(doca < fMinimizationThreshold){
+        static double const* pars = new double(0);
+        return CalculateDriftTime(pars);
+    }
+    else{
+        fFit->Clear();
+        std::function<double(double const*)> func = [this](double const* pars){
+            return this->CalculateDriftTime(pars);
+        };
+        ROOT::Math::Functor functionRT(func, 4);
+        fFit->SetFunction(functionRT);
+        fFit->SetVariable(0,       "lambda",      0.,      1e-3);
+        fFit->SetVariableLimits(0,      -10.,     10.);
+        fFit->Minimize();
+        return fFit->MinValue();
+    }
+}
 
 double const CalibInfo::GetTAtR(double r){
 	static const double maxDoca = fMaxDocaIndexXT * fdDoca;
