@@ -6,6 +6,7 @@
 #include <TCanvas.h>
 #include <TH1.h>
 #include <TF1.h>
+#include <TGraph.h>
 #include <TLine.h>
 #include <TMarker.h>
 #include "CDCHit.hxx"

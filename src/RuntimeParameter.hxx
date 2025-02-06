@@ -36,6 +36,7 @@ namespace RuntimePar
 	extern double const minRho;
 	extern double const maxRho;
 	extern double const dRho;
+    extern int const numTrackCut;
 
     //for CalibInfo
     extern double const XT_reso_x;

@@ -43,7 +43,7 @@ private:
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_mean;
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_std;
     ROOT::Math::Minimizer* fFit = nullptr;
-    double fMinimizationThreshold = 7.; //do minimization for drift time if exceed this threshold
+    double fMinimizationThreshold = 6.; //do minimization for drift time if exceed this threshold
     TVector3 fCurrentTrkPos;
     TVector3 fCurrentTrkDir;
     int fCurrentChannel;

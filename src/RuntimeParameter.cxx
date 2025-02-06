@@ -5,7 +5,7 @@ namespace RuntimePar
 	//Basic information
 	std::string f_in_path("");
 	int runNum = 0;
-    bool const runMode = 1;
+    bool const runMode = 0;
 	int startEvent = 0;
 	int const nCh = 4992;
 	std::string XTMode("XYZT");
@@ -32,6 +32,7 @@ namespace RuntimePar
 	double const minRho = -1;
 	double const maxRho = 999;
 	double const dRho = (maxRho - minRho) / nbinRho;
+    int const numTrackCut = 1;
 
     //for CalibInfo
     double const XT_reso_x = 0.1; //mm

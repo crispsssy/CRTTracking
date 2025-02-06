@@ -91,7 +91,7 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 
 	TCanvas* c = new TCanvas();
 	c->SetTitle("Preprocess");
-	c->Divide(2,1);
+	c->Divide(1,2);
 	c->cd(1);
 	h_tdc->Draw();
 	std::cout<<"histogram drawn"<<std::endl;
@@ -102,11 +102,13 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	m->Draw();
 
 	c->cd(2);
-	TH1I* h_ped = new TH1I("h_ped", "pedestal value for all channels", 200, 100, 300);
+	TGraph* g_ped = new TGraph();
+    g_ped->SetName("g_ped");
+    g_ped->SetTitle("Pedestal values for all channels");
 	for(int i=0; i<4992; ++i){
-		h_ped->Fill(fPedestal[i]);
+		g_ped->AddPoint(i, fPedestal[i]);
 	}
-	h_ped->Draw();
+	g_ped->Draw("AP");
 	c->Update();
 }
 

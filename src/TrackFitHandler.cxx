@@ -2,6 +2,7 @@
 
 using RuntimePar::runMode;
 using RuntimePar::XTMode;
+using RuntimePar::numTrackCut;
 
 TrackFitHandler::TrackFitHandler(){
 
@@ -35,6 +36,13 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
                 }
             }
         }
+    }
+
+    //Number of track cut
+    if(numTrackCut !=0 && pairs.size() > numTrackCut){
+        delete tracks;
+        tracks = nullptr;
+        return nullptr;
     }
 
     //3D fitting with all layers
@@ -93,7 +101,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
     double phiOdd = lineOdd->GetDir().Phi();
     double phiEven = lineEven->GetDir().Phi();
     double phi = (phiOdd + phiEven) / 2;
-    	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
+//    	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
     //Find theta and POCA.Z of the track
     double xOddBottum, yOddBottum, xOddTop, yOddTop;
