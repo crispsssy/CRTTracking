@@ -146,9 +146,8 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-    TVector3 pocaT;
-    TVector3 pocaW;
     TVector2 pos_cell;
+    double shift;
 
     if(runMode){
         static int rr = 0;
@@ -159,10 +158,7 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
-        CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
-        pos_cell = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel);
-        double shift = CDCGeom::Get().GetCellShift(trkPos.Z(), channel);
-        double t_expect = CalibInfo::Get().GetTAtXYShift(pos_cell.X(), pos_cell.Y(), shift);
+        double t_expect = CalibInfo::Get().GetDriftTime(trkPos, trkDir, channel, pos_cell, shift);
         if(runMode) std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
         chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);

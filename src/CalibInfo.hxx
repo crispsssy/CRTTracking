@@ -18,7 +18,7 @@
 class CalibInfo{
 public:
 	static CalibInfo& Get();
-    double const GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel);
+    double const GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel, TVector2& posCell, double& shift);
 	double const GetTAtR(double r);
     double const GetTAtXYShift(double x, double y, double shift);
 	double const GetTimeResolution(double r) const;

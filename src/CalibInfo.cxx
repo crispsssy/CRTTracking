@@ -119,7 +119,7 @@ void CalibInfo::GenerateSimpleXT(){
     fSimpleResoFunc->Write();
 }
 
-double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel){
+double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel, TVector2& posCell, double& shift){
     TVector3 pocaT;
     TVector3 pocaW;
     CDCGeom::Get().GetPOCA(trkPos, trkDir, channel, pocaT, pocaW);
@@ -127,9 +127,11 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
     fCurrentTrkDir = trkDir;
     fCurrentChannel = channel;
     double doca = CDCGeom::Get().LocalPositionToCellPositionXY(pocaT, channel).Mod();
+    double t = 0.;
+    double lambda = 0.;
     if(doca < fMinimizationThreshold){
-        static double const* pars = new double(0);
-        return CalculateDriftTime(pars);
+        static double const* pars = new double(lambda);
+        t = CalculateDriftTime(pars);
     }
     else{
         fFit->Clear();
@@ -141,8 +143,13 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
         fFit->SetVariable(0,       "lambda",      0.,      1e-3);
         fFit->SetVariableLimits(0,      -10.,     10.);
         fFit->Minimize();
-        return fFit->MinValue();
+        t = fFit->MinValue();
+        lambda = fFit->X()[0];
     }
+    TVector3 posLocal = pocaT + lambda * trkDir;
+    posCell = CDCGeom::Get().LocalPositionToCellPositionXY(posLocal, channel);
+    shift = CDCGeom::Get().GetCellShift(posLocal.Z(), channel);
+    return t;
 }
 
 double const CalibInfo::GetTAtR(double r){
@@ -158,7 +165,7 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 //    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
     auto itr = fGraphs_x2t_mean.find(index);
     if(itr == fGraphs_x2t_mean.end()){
-        index = 45; //no shift
+        itr = fGraphs_x2t_mean.find(45); //no shift
     }
     if(r > fMaxR){
         return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
@@ -180,7 +187,7 @@ double const CalibInfo::GetTimeResolution(double const x, double const y, double
     int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
     auto itr = fGraphs_x2t_std.find(index);
     if(itr == fGraphs_x2t_std.end()){
-        index = 45;
+        itr = fGraphs_x2t_std.find(45); //no shift
     }
     if(r > fMaxR){
         return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
