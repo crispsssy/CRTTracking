@@ -52,6 +52,8 @@ private:
     int const fMaxDocaIndexXT = 94;
     int const fMaxDocaIndexReso = 74;
     double const fdDoca = 0.1;
+    //for percise XT
+    double const fMaxR = 20.;
 };
 
 #endif

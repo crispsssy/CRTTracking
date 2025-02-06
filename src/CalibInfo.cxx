@@ -158,11 +158,10 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 //    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
     auto itr = fGraphs_x2t_mean.find(index);
     if(itr == fGraphs_x2t_mean.end()){
-//        std::cout<<"xt map out of range, maybe it's out of wire length."<<std::endl;
-        return r / 14.14 * 5000.;
+        index = 45; //no shift
     }
-    if(x > 15 || x < -15 || y > 10 || y < -10){
-        return r / 14.14 * 5000.;
+    if(r > fMaxR){
+        return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
     }
     double t = itr->second->Interpolate(x, y);
     return t;
@@ -177,13 +176,14 @@ double const CalibInfo::GetTimeResolution(double r) const
 
 double const CalibInfo::GetTimeResolution(double const x, double const y, double const shift) const
 {
+    double r = sqrt(x*x + y*y);
     int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
     auto itr = fGraphs_x2t_std.find(index);
     if(itr == fGraphs_x2t_std.end()){
-        return 100.;
+        index = 45;
     }
-    if(x > 15 || x < -15 || y > 10 || y < -10){
-        return 100.;
+    if(r > fMaxR){
+        return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
     }
     double sigma = itr->second->Interpolate(x, y);
     return sigma;
