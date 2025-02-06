@@ -68,11 +68,11 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
     if(XTMode == "XYZT"){
         fFit->SetStrategy(2);
         fFit->SetMaxFunctionCalls(1e4);
-        step = 1e-6;
+        step = 1e-5;
         double dRho = 2.;
-        double dPhi = 1e-2;
-        double dAlpha = 1e-2;
-        double dTheta = 0.1;
+        double dPhi = 2e-2;
+        double dAlpha = 2e-2;
+        double dTheta = 0.2;
         rhoMin = rho - dRho;
         rhoMax = rho + dRho;
         phiMin = phi - dPhi;
