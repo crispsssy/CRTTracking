@@ -41,6 +41,9 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	std::vector<double> fErr_alpha;
 	std::vector<double> fErr_theta;
     std::vector<std::vector<int>> fChannel;
+    std::vector<std::vector<double>> fResidual;
+    std::vector<std::vector<TVector3>> fTrkPos_excludeHit;
+    std::vector<std::vector<TVector3>> fTrkDir_excludeHit;
 	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_" + XTMode + ".root";
 	TFile* f_out = new TFile(f_name_out.c_str(), "RECREATE");
 	TTree* t_out = new TTree("t", "t");
@@ -56,6 +59,9 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	t_out->Branch("err_alpha", &fErr_alpha);
 	t_out->Branch("err_theta", &fErr_theta);
     t_out->Branch("channel", &fChannel);
+    t_out->Branch("residual", &fResidual);
+    t_out->Branch("trkPos_excludeHit", &fTrkPos_excludeHit);
+    t_out->Branch("trkDir_excludeHit", &fTrkDir_excludeHit);
 
     clock_t tStart = clock();
 	//Preprocess of hits
@@ -158,6 +164,9 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		std::vector<double> err_alpha;
 		std::vector<double> err_theta;
         std::vector<std::vector<int>> channel;
+        std::vector<std::vector<double>> residual;
+        std::vector<std::vector<TVector3>> trkPos_excludeHit;
+        std::vector<std::vector<TVector3>> trkDir_excludeHit;
 		for(auto track = tracks->begin(); track != tracks->end(); ++track){
 			if(!(*track)) continue; //TODO should remove this line after implementation
 			trksPos.push_back( (*track)->GetPos() );
@@ -170,10 +179,21 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 			err_alpha.push_back( (*track)->GetAlphaError() );
 			err_theta.push_back( (*track)->GetThetaError() );
             std::vector<int> channels;
-            for(auto hit = (*track)->GetHits()->begin(); hit != (*track)->GetHits()->end(); ++hit){
+            std::vector<double> residuals;
+            std::vector<TVector3> trkPos_residuals;
+            std::vector<TVector3> trkDir_residuals;
+            CDCHitContainer* hits = (*track)->GetHits();
+            std::shared_ptr<CDCLineCandidateContainer> trackResiduals = (*track)->GetTrackResidual();
+            for(auto hit = hits->begin(); hit != hits->end(); ++hit){
                 channels.push_back((*hit)->GetChannelID());
+                residuals.push_back((*hit)->GetResidual());
+                trkPos_residuals.push_back(trackResiduals->at(hit - hits->begin())->GetPos());
+                trkDir_residuals.push_back(trackResiduals->at(hit - hits->begin())->GetDir());
             }
             channel.push_back(std::move(channels));
+            residual.push_back(std::move(residuals));
+            trkPos_excludeHit.push_back(std::move(trkPos_residuals));
+            trkDir_excludeHit.push_back(std::move(trkDir_residuals));
 		}
 		fEventID = iEvent;
 		fTrkPos = std::move(trksPos);
@@ -186,6 +206,9 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		fErr_alpha = std::move(err_alpha);
 		fErr_theta = std::move(err_theta);
         fChannel = std::move(channel);
+        fResidual = std::move(residual);
+        fTrkPos_excludeHit = std::move(trkPos_excludeHit);
+        fTrkDir_excludeHit = std::move(trkDir_excludeHit);
 		t_out->Fill();
 
 		//Track fitting debug part

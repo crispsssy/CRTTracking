@@ -22,6 +22,7 @@ public:
     void SetPosCell(TVector2 const& posCell){ fPosCell = posCell; }
 	bool IncreaseTDCIndex();
 	void InsertDriftDistance(double dis){ fDriftDistance.push_back(dis); }
+    void SetResidual(double residual){ fResidual = residual; }
     std::vector<short> const& GetADCs() const { return fADC; }
 	int const GetChannelID() const { return fChannelID; }
 	double const GetDriftTime(int index) const { return fDriftTime.at(index); }
@@ -31,6 +32,7 @@ public:
 	double const GetDriftDistance(int index) const { return fDriftDistance.at(index); }
 	std::vector<double> const GetDriftDistance() const { return fDriftDistance; }
     TVector2 const& GetPosCell() const { return fPosCell; }
+    double const GetResidual() const { return fResidual; }
 
 	void ls() const;
 
@@ -43,6 +45,7 @@ private:
 	double fZ = 0.;
 	unsigned int fUseTDC = 0; //determine which TDC will be used for fitting
     TVector2 fPosCell;
+    double fResidual;
 };
 
 class CDCHitContainer : public std::vector<CDCHit*>

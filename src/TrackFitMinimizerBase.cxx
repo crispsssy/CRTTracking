@@ -12,3 +12,14 @@ TrackFitMinimizerBase::TrackFitMinimizerBase(std::shared_ptr<CDCLineCandidate> t
     }
     fFit->SetPrintLevel(runMode);
 }
+
+void TrackFitMinimizerBase::Clear()
+{
+    fFit->Clear();
+    fTrack.reset();
+}
+
+void TrackFitMinimizerBase::SetTrack(std::shared_ptr<CDCLineCandidate> track)
+{
+    fTrack = track;
+}

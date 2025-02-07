@@ -17,6 +17,7 @@ class TrackFitHandler{
 public:
     static TrackFitHandler& Get();
     CDCLineCandidateContainer* Find3DTracks(CDCLineCandidateContainer* lines);
+    void ReFit(CDCLineCandidateContainer* tracks);
 
 private:
     TrackFitHandler();

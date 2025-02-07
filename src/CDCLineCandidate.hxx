@@ -8,6 +8,7 @@
 
 #include "CDCHit.hxx"
 
+class CDCLineCandidateContainer;
 
 class CDCLineCandidate
 {
@@ -28,6 +29,8 @@ public:
 	void SetPhiError(double err_phi){ fErr_phi = err_phi; }
 	void SetAlphaError(double err_alpha){ fErr_alpha = err_alpha; }
 	void SetThetaError(double err_theta){ fErr_theta = err_theta; }
+    void SetHits(CDCHitContainer* hits){ fHits = hits; }
+    void SetTrackResidual(std::shared_ptr<CDCLineCandidateContainer> tracks){ fTrackResidual = tracks; }
 	inline TVector3 const& GetPos() const { return fPos; }
 	inline TVector3 const& GetDir() const { return fDir; }
 	inline double const GetChi2() const { return fChi2; }
@@ -38,6 +41,7 @@ public:
 	inline double const GetThetaError() const { return fErr_theta; }
 	CDCHitContainer* GetHits() const { return fHits; }
 	CDCHit* GetHit(int const hit_index) const { return fHits->at(hit_index); }
+    std::shared_ptr<CDCLineCandidateContainer> GetTrackResidual() const { return fTrackResidual; }
 	inline bool const GetOddEven() const { return fOddEven; }
 	double const GetXAtY(double y) const;
 	double const GetYAtX(double x) const;
@@ -58,6 +62,7 @@ private:
 	double fErr_phi;
 	double fErr_alpha;
 	double fErr_theta;
+    std::shared_ptr<CDCLineCandidateContainer> fTrackResidual;
 };
 
 class CDCLineCandidateContainer : public std::vector<std::shared_ptr<CDCLineCandidate>>

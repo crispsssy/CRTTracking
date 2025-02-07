@@ -114,6 +114,12 @@ void CalibInfo::GenerateSimpleXT(){
     fSimpleResoFunc->Write();
 }
 
+double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel){
+    TVector2 posCell;
+    double shift;
+    return GetDriftTime(trkPos, trkDir, channel, posCell, shift);
+}
+
 double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel, TVector2& posCell, double& shift){
     TVector3 pocaT;
     TVector3 pocaW;

@@ -14,6 +14,8 @@ public:
     TrackFitMinimizerBase(std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType);
     ~TrackFitMinimizerBase(){}
     virtual void TrackFitting(std::string const& XTMode) = 0;
+    void Clear();
+    void SetTrack(std::shared_ptr<CDCLineCandidate> track);
 
 private:
     virtual void SetupParameters(std::string const& XTMode) = 0;
