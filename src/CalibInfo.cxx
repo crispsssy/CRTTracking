@@ -65,11 +65,6 @@ void CalibInfo::SetupMinimizer(){
         exit(-1);
     }
 
-    std::function<double(double const*)> func = [this](double const* pars){
-        return this->CalculateDriftTime(pars);
-    };
-    ROOT::Math::Functor functionRT(func, 4);
-    fFit->SetFunction(functionRT);
 }
 
 double CalibInfo::CalculateDriftTime(double const* pars){
@@ -140,7 +135,7 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
         };
         ROOT::Math::Functor functionRT(func, 4);
         fFit->SetFunction(functionRT);
-        fFit->SetVariable(0,       "lambda",      0.,      1e-3);
+        fFit->SetVariable(0,       "lambda",      0.,      0.1);
         fFit->SetVariableLimits(0,      -10.,     10.);
         fFit->Minimize();
         t = fFit->MinValue();
