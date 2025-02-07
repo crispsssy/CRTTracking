@@ -153,7 +153,11 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 		}
 	}
 	
-	if(hit->GetDriftTime().size() == 0) return nullptr;
+	if(hit->GetDriftTime().size() == 0){
+        delete hit;
+        hit = nullptr;
+        return nullptr;
+    }
 
     //Fill ADCs
     hit->SetADCs(thisADC);
