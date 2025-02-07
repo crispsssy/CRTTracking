@@ -20,6 +20,7 @@ set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/HoughHandler.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeParameter.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitHandler.cxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerBase.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizer.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx
