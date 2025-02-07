@@ -5,7 +5,7 @@ namespace RuntimePar
 	//Basic information
 	std::string f_in_path("");
 	int runNum = 0;
-    bool const runMode = 0;
+    bool const runMode = 1;
 	int startEvent = 0;
 	int const nCh = 4992;
 	std::string XTMode("XYZT");

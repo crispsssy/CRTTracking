@@ -83,7 +83,7 @@ double const CDCGeom::ChannelZToY(int channel, double z){
 	return YHV[channel] + t * dy;
 }
 
-TVector2 const CDCGeom::GetWireTrackIntersectionZY(CDCLineCandidate* track, int channel){
+TVector2 const CDCGeom::GetWireTrackIntersectionZY(std::shared_ptr<CDCLineCandidate> track, int channel){
 	double wire_dydz = (YRO[channel] - YHV[channel]) / (ZRO[channel] - ZHV[channel]);
 	double wire_yAtz0 = ChannelZToY(channel, 0.);
 	double track_dydz = track->GetDir().Y() / track->GetDir().Z();

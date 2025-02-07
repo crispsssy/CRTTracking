@@ -2,8 +2,9 @@
 
 using RuntimePar::runMode;
 
-TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
-    fTrack = track;
+TrackFitMinimizer::TrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track)
+: fTrack(track)
+{
     fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
     if(!fFit){
         std::cerr<<"Can not create minimizer"<<std::endl;

@@ -18,7 +18,7 @@ TrackFitHandler& TrackFitHandler::Get(){
 }
 
 CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContainer* lines){
-    std::vector<std::map<unsigned int, CDCLineCandidate*>> pairs;
+    std::vector<std::map<unsigned int, std::shared_ptr<CDCLineCandidate>>> pairs;
     CDCLineCandidateContainer* tracks = new CDCLineCandidateContainer();
     //Preprocess of line candidates
     for(auto lineOdd = lines->begin(); lineOdd != lines->end(); ++lineOdd){
@@ -28,10 +28,10 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
                 //pick up a even layer candidate
                 if( (*lineEven)->GetOddEven() == 0 ){
                     if(IsGoodPair(*lineOdd, *lineEven)){
-                        std::map<unsigned int, CDCLineCandidate*> linePair;
+                        std::map<unsigned int, std::shared_ptr<CDCLineCandidate>> linePair;
                         linePair[lineOdd - lines->begin()] = *lineOdd;
                         linePair[lineEven - lines->begin()] = *lineEven;
-                        pairs.push_back(std::move(linePair));
+                        pairs.push_back(linePair);
                     }
                 }
             }
@@ -40,6 +40,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 
     //Number of track cut
     if(numTrackCut !=0 && pairs.size() > numTrackCut){
+        std::cout<<"number of pairs "<<pairs.size()<<" been cut"<<std::endl;
         delete tracks;
         tracks = nullptr;
         return nullptr;
@@ -47,14 +48,14 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 
     //3D fitting with hits with simple XT (radial symmetric) t < 400 ns
     //	std::cout<<"start 3D track fitting"<<std::endl;
-    for(std::vector<std::map<unsigned int, CDCLineCandidate*>>::const_iterator linePair = pairs.begin(); linePair != pairs.end(); ++linePair){
-        CDCLineCandidate* lineOdd;
-        CDCLineCandidate* lineEven;
+    for(std::vector<std::map<unsigned int, std::shared_ptr<CDCLineCandidate>>>::const_iterator linePair = pairs.begin(); linePair != pairs.end(); ++linePair){
+        std::shared_ptr<CDCLineCandidate> lineOdd;
+        std::shared_ptr<CDCLineCandidate> lineEven;
         for(auto line = linePair->begin(); line != linePair->end(); ++line){
             if( line->second->GetOddEven() == 1) lineOdd = line->second;
             else lineEven = line->second;
         }
-        CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
+        std::shared_ptr<CDCLineCandidate> track = FindInitialTrack(lineOdd, lineEven);
         TrackFitMinimizer fit(track);
         fit.TrackFitting("RT");
         //		fit.TrackFittingRTT0();
@@ -68,7 +69,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
     //TODO to be done
 
     //precise fit with all hits and precise XT
-    for(CDCLineCandidate* track : (*tracks)){
+    for(std::shared_ptr<CDCLineCandidate> track : (*tracks)){
         TrackFitMinimizer fit(track);
         fit.TrackFitting("XYZT");
     }
@@ -76,7 +77,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
     return tracks;
 }
 
-bool TrackFitHandler::IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven){
+bool TrackFitHandler::IsGoodPair(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven){
     double phiOdd = lineOdd->GetDir().Phi();
     TVector3 posOdd = lineOdd->GetPos();
     double phiEven = lineEven->GetDir().Phi();
@@ -103,8 +104,8 @@ bool TrackFitHandler::IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* li
     }
 }
 
-CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven){
-    CDCLineCandidate* track = new CDCLineCandidate();
+std::shared_ptr<CDCLineCandidate> TrackFitHandler::FindInitialTrack(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven){
+    std::shared_ptr<CDCLineCandidate> track = std::make_shared<CDCLineCandidate>();
 
     TVector3 posOdd = lineOdd->GetPos();
     TVector3 posEven = lineEven->GetPos();
@@ -161,7 +162,7 @@ CDCLineCandidate* TrackFitHandler::FindInitialTrack(CDCLineCandidate* lineOdd, C
         int channel = (*hit)->GetChannelID();
         if( (*hit)->GetZ() < -1500. || (*hit)->GetZ() > 1500.){
             if(runMode) std::cout<<"Track candidate initial Z out of range, abort. ch = "<<channel<<" Z = "<<(*hit)->GetZ()<<std::endl;
-            delete track;
+            track.reset();
             return nullptr;
         }
         else if( (*hit)->GetZ() < -1000.){

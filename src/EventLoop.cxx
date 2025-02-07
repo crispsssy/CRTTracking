@@ -107,7 +107,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		}
 //		std::cout<<"Found "<<lines->size()<<" candidates"<<std::endl;
 		int remainHits_hough = 0;
-		for(std::vector<CDCLineCandidate*>::const_iterator line = lines->begin(); line != lines->end(); ++line){
+		for(std::vector<std::shared_ptr<CDCLineCandidate>>::const_iterator line = lines->begin(); line != lines->end(); ++line){
 			remainHits_hough += (*line)->GetHits()->size();
 		}
 		double efficiency_hough = (double)remainHits_hough / numRawHits;
@@ -198,16 +198,8 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 
 
 		//release memory
-		for(auto track = tracks->begin(); track != tracks->end(); ++track){
-			if(!(*track)) continue;
-			for(auto hit = (*track)->GetHits()->begin(); hit != (*track)->GetHits()->end(); ++hit){
-				delete (*hit);
-			}
-			delete (*track);
-		}
-		for(auto line = lines->begin(); line != lines->end(); ++line){
-			delete *line;
-		}
+        delete tracks;
+        delete lines;
 		for(auto hit = rawHits->begin(); hit != rawHits->end(); ++hit){
 			delete *hit;
 		}

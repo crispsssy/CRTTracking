@@ -2,6 +2,7 @@
 #define _LINECANDIDATE_HXX_
 
 #include <iostream>
+#include <memory>
 #include <cmath>
 #include <TVector3.h>
 
@@ -59,7 +60,7 @@ private:
 	double fErr_theta;
 };
 
-class CDCLineCandidateContainer : public std::vector<CDCLineCandidate*>
+class CDCLineCandidateContainer : public std::vector<std::shared_ptr<CDCLineCandidate>>
 {
 public:
 	CDCLineCandidateContainer(){}

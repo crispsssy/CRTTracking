@@ -13,7 +13,7 @@
 
 class TrackFitMinimizer{
 public:
-    TrackFitMinimizer(CDCLineCandidate* track);
+    TrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track);
     ~TrackFitMinimizer();
     void TrackFitting(std::string XTMode);
     void TrackFittingRTT0();
@@ -27,7 +27,7 @@ private:
     void UpdateTrack(double const* pars, double const* errors);
     void Optimize();
 
-    CDCLineCandidate* fTrack = nullptr;
+    std::shared_ptr<CDCLineCandidate> fTrack;
     ROOT::Math::Minimizer* fFit = nullptr;
 };
 

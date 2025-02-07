@@ -34,7 +34,7 @@ public:
 	double const GetCDCLength() const { return CDCLength; }
 	double const ChannelYToZ(int channel, double y);
 	double const ChannelZToY(int channel, double z);
-	TVector2 const GetWireTrackIntersectionZY(CDCLineCandidate* track, int channel);
+	TVector2 const GetWireTrackIntersectionZY(std::shared_ptr<CDCLineCandidate> track, int channel);
 	double const GetStereoAngle(int channel);
 	void GetPOCA(TVector3 const& trkPos, TVector3 const& trkDir, int channel, TVector3& pocaT, TVector3& pocaW);
 	void GetPOCA(TVector3 const& trkPos, TVector3 const& trkDir, TVector3 const& wirePos, TVector3 const& wireDir, TVector3& pocaT, TVector3& pocaW);

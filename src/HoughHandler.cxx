@@ -55,22 +55,17 @@ CDCLineCandidateContainer* HoughHandler::FindCandidates(CDCHitContainer* hits){
 		}
 
 		//Find peak position and line candidate
-		CDCLineCandidate* lineOdd = FindCandidate(houghOdd, 1);
-		CDCLineCandidate* lineEven = FindCandidate(houghEven, 0);
+		std::shared_ptr<CDCLineCandidate> lineOdd = FindCandidate(houghOdd, 1);
+		std::shared_ptr<CDCLineCandidate> lineEven = FindCandidate(houghEven, 0);
 
 		//Save line candidate
-		if(IsGoodCandidate(lineOdd, lineEven, &remainHits)){
-//			std::cout<<"found good candidate at "<<itr + 1<<"th Hough transform"<<std::endl;
-			if(lineOdd) lines->push_back(lineOdd);
-			if(lineEven) lines->push_back(lineEven);
-//			std::cout<<"size of candidate container: "<<lines->size()<<std::endl;
-		}
-		else{
-//			std::cout<<"no good candidate at "<<itr + 1<<"th Hough transform"<<std::endl;
-			delete lineOdd;
-			delete lineEven;
-			break;
-		}
+        bool isOddGood = false, isEvenGood = false;
+        IsGoodCandidate(lineOdd, lineEven, isOddGood, isEvenGood, &remainHits);
+//        			std::cout<<"found good candidate at "<<itr + 1<<"th Hough transform"<<std::endl;
+        if(isOddGood) lines->push_back(lineOdd);
+        if(isEvenGood) lines->push_back(lineEven);
+//        			std::cout<<"size of candidate container: "<<lines->size()<<std::endl;
+        if((!isOddGood) && (!isEvenGood)) break;
 /*
 		std::cout<<"Draw hough histograms"<<std::endl;
 		TCanvas* c = new TCanvas();
@@ -90,7 +85,7 @@ CDCLineCandidateContainer* HoughHandler::FindCandidates(CDCHitContainer* hits){
 	return lines;
 }
 
-CDCLineCandidate* HoughHandler::FindCandidate(TH2D* hist, bool oddEven){
+std::shared_ptr<CDCLineCandidate> HoughHandler::FindCandidate(TH2D* hist, bool oddEven){
 	int binX, binY, binZ;
 	hist->GetMaximumBin(binX, binY, binZ);
 
@@ -103,11 +98,10 @@ CDCLineCandidate* HoughHandler::FindCandidate(TH2D* hist, bool oddEven){
 	TVector3 dir(-sin(theta), cos(theta), 0);
 //	std::cout<<"pos:dir "<<pos.X()<<","<<pos.Y()<<":"<<dir.X()<<","<<dir.Y()<<std::endl;
 
-	CDCLineCandidate* line = new CDCLineCandidate(pos, dir, oddEven);
-	return line;
+	return std::make_shared<CDCLineCandidate>(pos, dir, oddEven);
 }
 
-bool HoughHandler::IsGoodCandidate(CDCLineCandidate*& lineOdd, CDCLineCandidate*& lineEven, CDCHitContainer* remainHits){
+void HoughHandler::IsGoodCandidate(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven, bool& isOddGood, bool& isEvenGood, CDCHitContainer* remainHits){
 	//Loop over hits to collect hits that used by this line
 //	std::cout<<"Start to judge if candidate is good"<<std::endl;
 	TVector3 posOdd = lineOdd->GetPos();
@@ -161,23 +155,8 @@ bool HoughHandler::IsGoodCandidate(CDCLineCandidate*& lineOdd, CDCLineCandidate*
 	}
 
 	//return result
-	if(lineOdd->GetHits()->size() > 5 && lineEven->GetHits()->size() > 5){
-//		std::cout<<"good "<<std::endl;
-		return true;
-	}
-	else if(lineOdd->GetHits()->size() > 5){
-//		std::cout<<"partially (odd) good"<<std::endl;
-		delete lineEven;
-		lineEven = nullptr;
-		return true;
-	}
-	else if(lineEven->GetHits()->size() > 5){
-//		std::cout<<"partially (even) good"<<std::endl;
-		delete lineOdd;
-		lineOdd = nullptr;
-		return true;
-	}
-	else return false;
+	if(lineOdd->GetHits()->size() > 5) isOddGood = true;
+	if(lineEven->GetHits()->size() > 5) isEvenGood = true;
 }
 
 double HoughHandler::CalculateDistance(TVector3 pos_point, TVector3 pos_line, TVector3 dir_line){

@@ -189,7 +189,7 @@ void EventDisplay::DrawLineCandidates(CDCLineCandidateContainer* lines, int even
 		l->Draw("SAME");
 	}
 
-	std::cout<<"Drawn andidates"<<std::endl;
+	std::cout<<"Drawn candidates"<<std::endl;
 }
 
 void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event){

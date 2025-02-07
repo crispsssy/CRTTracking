@@ -27,8 +27,8 @@ private:
 	HoughHandler(HoughHandler const& src);
 	HoughHandler& operator=(HoughHandler const& rhs);
 
-	CDCLineCandidate* FindCandidate(TH2D* h_hough, bool oddEven);
-	bool IsGoodCandidate(CDCLineCandidate*& lineOdd, CDCLineCandidate*& lineEven, CDCHitContainer* remainHits);
+	std::shared_ptr<CDCLineCandidate> FindCandidate(TH2D* h_hough, bool oddEven);
+	void IsGoodCandidate(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven, bool& isOddGood, bool& isEvenGood, CDCHitContainer* remainHits);
 
 	static HoughHandler* fHoughHandler;
 

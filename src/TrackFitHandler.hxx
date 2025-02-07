@@ -25,8 +25,8 @@ private:
 
     static TrackFitHandler* fTrackFitHandler;
 
-    bool IsGoodPair(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
-    CDCLineCandidate* FindInitialTrack(CDCLineCandidate* lineOdd, CDCLineCandidate* lineEven);
+    bool IsGoodPair(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven);
+    std::shared_ptr<CDCLineCandidate> FindInitialTrack(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven);
 
     double fMaxDistanceEO = 300; //mm distance between even and odd layer lines
     double fMaxPhiDiff = 1.; //rad
