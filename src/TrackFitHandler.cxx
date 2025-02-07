@@ -45,7 +45,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
         return nullptr;
     }
 
-    //3D fitting with all layers
+    //3D fitting with hits with simple XT (radial symmetric) t < 400 ns
     //	std::cout<<"start 3D track fitting"<<std::endl;
     for(std::vector<std::map<unsigned int, CDCLineCandidate*>>::const_iterator linePair = pairs.begin(); linePair != pairs.end(); ++linePair){
         CDCLineCandidate* lineOdd;
@@ -57,9 +57,20 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
         CDCLineCandidate* track = FindInitialTrack(lineOdd, lineEven);
         TrackFitMinimizer fit(track);
         fit.TrackFitting("RT");
-        fit.TrackFitting("XYZT");
         //		fit.TrackFittingRTT0();
         tracks->push_back(track);
+    }
+
+    //Find the best candidate as the triggered track. then exclude pairs that contain hits in triggered track
+    //TODO to be done
+
+    //Fit with T0 for tracks that are not triggered track
+    //TODO to be done
+
+    //precise fit with all hits and precise XT
+    for(CDCLineCandidate* track : (*tracks)){
+        TrackFitMinimizer fit(track);
+        fit.TrackFitting("XYZT");
     }
 
     return tracks;

@@ -14,6 +14,7 @@ TrackFitMinimizer::TrackFitMinimizer(CDCLineCandidate* track){
 
 TrackFitMinimizer::~TrackFitMinimizer(){
     delete fFit;
+    fFit = nullptr;
 }
 
 void TrackFitMinimizer::TrackFitting(std::string XTMode){
