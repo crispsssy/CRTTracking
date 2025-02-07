@@ -10,7 +10,7 @@
 #include "CDCLineCandidate.hxx"
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
-#include "TrackFitMinimizer.hxx"
+#include "TrackFitMinimizerDefault.hxx"
 #include "RuntimeParameter.hxx"
 
 class TrackFitHandler{

@@ -1,24 +1,14 @@
-#include "TrackFitMinimizer.hxx"
+#include "TrackFitMinimizerDefault.hxx"
 
 using RuntimePar::runMode;
 
-TrackFitMinimizer::TrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track)
-: fTrack(track)
+TrackFitMinimizerDefault::TrackFitMinimizerDefault(std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType)
+: TrackFitMinimizerBase(track, minimizerType)
 {
-    fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
-    if(!fFit){
-        std::cerr<<"Can not create minimizer"<<std::endl;
-        exit(-1);
-    }
-    //	std::cout<<"fit constructed"<<std::endl;
+
 }
 
-TrackFitMinimizer::~TrackFitMinimizer(){
-    delete fFit;
-    fFit = nullptr;
-}
-
-void TrackFitMinimizer::TrackFitting(std::string XTMode){
+void TrackFitMinimizerDefault::TrackFitting(std::string const& XTMode){
     if(!fTrack) return;
 
     fFit->SetTolerance(0.001);
@@ -49,7 +39,7 @@ void TrackFitMinimizer::TrackFitting(std::string XTMode){
 
 }
 
-void TrackFitMinimizer::SetupParameters(std::string XTMode){
+void TrackFitMinimizerDefault::SetupParameters(std::string const& XTMode){
     TVector3 pocaT;
     TVector3 pocaW;
     CDCGeom::Get().GetPOCA(fTrack->GetPos(), fTrack->GetDir(), TVector3(0., 0., 0.), TVector3(0., 0., 1.), pocaT, pocaW);
@@ -103,12 +93,12 @@ void TrackFitMinimizer::SetupParameters(std::string XTMode){
 
         
 
-double TrackFitMinimizer::GetChi2(){
+double TrackFitMinimizerDefault::GetChi2(){
     double const pars[4]{fTrack->GetXAtZ(0), fTrack->GetYAtZ(0.), fTrack->GetDir().Phi(), fTrack->GetDir().Theta() };
     return FittingFunctionRT(pars);
 }
 
-double TrackFitMinimizer::FittingFunctionRT(double const* pars){
+double TrackFitMinimizerDefault::FittingFunctionRT(double const* pars){
     //Abort hits that drift time larger than 400 ns since simple XT doesn't fit corner hits.
 //    	std::cout<<"Fitting Function RT called------------------------------"<<std::endl;
     //Define chi2 of fFitting here
@@ -138,7 +128,7 @@ double TrackFitMinimizer::FittingFunctionRT(double const* pars){
     return chi2;
 }
 
-double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
+double TrackFitMinimizerDefault::FittingFunctionXYZT(double const* pars)
 {
     double rho        = pars[0];
     double phi        = pars[1];
@@ -171,7 +161,7 @@ double TrackFitMinimizer::FittingFunctionXYZT(double const* pars)
     return chi2;
 }
 
-void TrackFitMinimizer::UpdateTrack(double const* pars, double const* errors){
+void TrackFitMinimizerDefault::UpdateTrack(double const* pars, double const* errors){
     double rho        = pars[0];
     double phi        = pars[1];
     double alpha      = pars[2];
@@ -209,7 +199,7 @@ void TrackFitMinimizer::UpdateTrack(double const* pars, double const* errors){
     }
 }
 
-void TrackFitMinimizer::TrackFittingRTT0(){
+void TrackFitMinimizerDefault::TrackFittingRTT0(){
     if(!fTrack) return;
 
     fFit->SetTolerance(0.1);
@@ -248,7 +238,7 @@ void TrackFitMinimizer::TrackFittingRTT0(){
 
 }
 
-double TrackFitMinimizer::FittingFunctionRTT0(double const* pars){
+double TrackFitMinimizerDefault::FittingFunctionRTT0(double const* pars){
     double rho        = pars[0];
     double phi        = pars[1];
     double alpha      = pars[2];
@@ -275,3 +265,12 @@ double TrackFitMinimizer::FittingFunctionRTT0(double const* pars){
     return chi2;
 }
 
+bool TrackFitMinimizerDefault::registered = [](){
+    TrackFitMinimizerFactory::Get().RegisterTrackFitMinimizer("TrackFitMinimizerDefault", 
+        [](std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType) {
+            return std::make_shared<TrackFitMinimizerDefault>(track, minimizerType);
+        }
+    );
+    std::cout<<"TrackFitMinimizerDefault registered to minimizer factory"<<std::endl;
+    return true;
+}();

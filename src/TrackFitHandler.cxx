@@ -56,8 +56,8 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
             else lineEven = line->second;
         }
         std::shared_ptr<CDCLineCandidate> track = FindInitialTrack(lineOdd, lineEven);
-        TrackFitMinimizer fit(track);
-        fit.TrackFitting("RT");
+        std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
+        fit->TrackFitting("RT");
         //		fit.TrackFittingRTT0();
         tracks->push_back(track);
     }
@@ -70,8 +70,8 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
 
     //precise fit with all hits and precise XT
     for(std::shared_ptr<CDCLineCandidate> track : (*tracks)){
-        TrackFitMinimizer fit(track);
-        fit.TrackFitting("XYZT");
+        std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
+        fit->TrackFitting("XYZT");
     }
 
     return tracks;

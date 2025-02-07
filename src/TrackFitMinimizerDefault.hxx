@@ -1,5 +1,5 @@
-#ifndef _TRACKFITMINIMIZER_HXX_
-#define _TRACKFITMINIMIZER_HXX_
+#ifndef _TRACKFITMINIMIZERDEFAULT_HXX_
+#define _TRACKFITMINIMIZERDEFAULT_HXX_
 
 #include <iostream>
 #include <Math/Minimizer.h>
@@ -10,25 +10,25 @@
 #include "CDCGeom.hxx"
 #include "CalibInfo.hxx"
 #include "RuntimeParameter.hxx"
+#include "TrackFitMinimizerBase.hxx"
+#include "TrackFitMinimizerFactory.hxx"
 
-class TrackFitMinimizer{
+class TrackFitMinimizerDefault : public TrackFitMinimizerBase{
 public:
-    TrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track);
-    ~TrackFitMinimizer();
-    void TrackFitting(std::string XTMode);
+    TrackFitMinimizerDefault(std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType);
+    void TrackFitting(std::string const& XTMode);
     void TrackFittingRTT0();
     double GetChi2();
 
 private:
-    void SetupParameters(std::string XTMode);
+    void SetupParameters(std::string const& XTMode);
     double FittingFunctionRT(double const* pars);
     double FittingFunctionXYZT(double const* pars);
     double FittingFunctionRTT0(double const* pars);
     void UpdateTrack(double const* pars, double const* errors);
     void Optimize();
 
-    std::shared_ptr<CDCLineCandidate> fTrack;
-    ROOT::Math::Minimizer* fFit = nullptr;
+    static bool registered;
 };
 
 #endif
