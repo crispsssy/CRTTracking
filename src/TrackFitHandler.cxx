@@ -56,6 +56,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
             else lineEven = line->second;
         }
         std::shared_ptr<CDCLineCandidate> track = FindInitialTrack(lineOdd, lineEven);
+        if(!track) continue; //FIXME check why hit.Z is so large, maybe because alpha is near 1.57?
         std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
         fit->TrackFitting("RT");
         //		fit.TrackFittingRTT0();
