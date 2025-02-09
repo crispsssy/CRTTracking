@@ -88,9 +88,8 @@ void TrackFitHandler::ReFit(CDCLineCandidateContainer* tracks){
             std::copy(hit + 1, hits_all->end(), std::back_inserter(*hits));
             std::shared_ptr<CDCLineCandidate> track_residual = std::make_shared<CDCLineCandidate>(*track);
             track_residual->SetHits(hits);
-            fit->Clear();
-            fit->SetTrack(track_residual);
-            fit->TrackFitting("XYZT");
+            std::shared_ptr<TrackFitMinimizerBase> fit_residual = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track_residual);
+            fit_residual->TrackFitting("XYZT");
             tracks_residual->push_back(track_residual);
             (*hit)->SetResidual((*hit)->GetDriftTime(0) - CalibInfo::Get().GetDriftTime(track_residual->GetPos(), track_residual->GetDir(), (*hit)->GetChannelID()));
         }
