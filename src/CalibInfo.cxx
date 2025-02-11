@@ -105,13 +105,14 @@ void CalibInfo::GenerateSimpleXT(){
     double y2_reso = fSimpleResoGraph->Eval(x2_reso);
     fSimpleResoFunc->SetParameter(1, (y2_reso - y1_reso) / (x2_reso - x1_reso));
     fSimpleResoFunc->SetParameter(0, y1_reso - fSimpleResoFunc->GetParameter(1) * x1_reso);
-    TFile f("graph.root", "RECREATE");
+/*    TFile f("graph.root", "RECREATE");
     fSimpleXTGraph->SetName("fSimpleXTGraph");
     fSimpleResoGraph->SetName("fSimpleResoGraph");
     fSimpleXTGraph->Write();
     fSimpleXTFunc->Write();
     fSimpleResoGraph->Write();
     fSimpleResoFunc->Write();
+*/    
 }
 
 double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trkDir, int const channel){
