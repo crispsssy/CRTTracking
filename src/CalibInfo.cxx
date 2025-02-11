@@ -166,8 +166,8 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
     int index_high = index_low + 1;
     double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
 //    std::cout<<"shift: index_low:index_high:coefficient "<<shift<<":"<<index_low<<":"<<index_high<<":"<<coefficient<<std::endl;
-    if(index_low >= nShift) index_low = nShift;
-    if(index_high >= nShift) index_high = nShift;
+    if(index_low >= nShift) index_low = nShift - 1;
+    if(index_high >= nShift) index_high = nShift - 1;
     if(index_low < 0) index_low = 0;
     if(index_high < 0) index_high = 0;
     auto itr_low = fGraphs_x2t_mean.find(index_low);
@@ -192,8 +192,8 @@ double const CalibInfo::GetTimeResolution(double const x, double const y, double
     int index_low = (shift + 4.5) / 0.1; //0.5 for rounding
     int index_high = index_low + 1;
     double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
-    if(index_low >= nShift) index_low = nShift;
-    if(index_high >= nShift) index_high = nShift;
+    if(index_low >= nShift) index_low = nShift - 1;
+    if(index_high >= nShift) index_high = nShift - 1;
     if(index_low < 0) index_low = 0;
     if(index_high < 0) index_high = 0;
     auto itr_low = fGraphs_x2t_std.find(index_low);

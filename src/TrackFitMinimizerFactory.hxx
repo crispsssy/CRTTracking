@@ -13,7 +13,7 @@ using CreateFunc = std::function<std::shared_ptr<TrackFitMinimizerBase>(std::sha
 public:
     static TrackFitMinimizerFactory& Get();
     void RegisterTrackFitMinimizer(std::string const& minimizerName, CreateFunc func){ fCreators[minimizerName] = func; }
-    std::shared_ptr<TrackFitMinimizerBase> CreateTrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track, std::string const& minimierName = "TrackFitMinimizerZ", std::string const& minimizerType = "Minuit2");
+    std::shared_ptr<TrackFitMinimizerBase> CreateTrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track, std::string const& minimierName = "TrackFitMinimizerDefault", std::string const& minimizerType = "Minuit2");
 
 private:
     TrackFitMinimizerFactory(){}
