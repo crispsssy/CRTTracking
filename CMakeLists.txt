@@ -35,6 +35,7 @@ add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cxx)
 target_link_libraries(CRTTracking PUBLIC Tracking)
 
 target_compile_definitions(Tracking PRIVATE XT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/xt")
+target_compile_definitions(Tracking PRIVATE CH_MAP="${CMAKE_CURRENT_SOURCE_DIR}/ch_map")
 
 install(TARGETS CRTTracking
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

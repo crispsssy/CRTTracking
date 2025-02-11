@@ -19,6 +19,9 @@ CDCGeom& CDCGeom::Get(){
 }
 
 void CDCGeom::ReadChMap(){
+#ifdef CH_MAP
+    fMapPath = std::string(CH_MAP) + "ch_map.root";
+#endif
 	int layerID_all, localWireID_all, BoardID, ChanID, LayerID, CellID;
 	double xRO, yRO, zRO, xHV, yHV, zHV;
 	TFile f_map(fMapPath.c_str(), "READ");
