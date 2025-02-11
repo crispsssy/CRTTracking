@@ -44,7 +44,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
     std::vector<std::vector<double>> fResidual;
     std::vector<std::vector<TVector3>> fTrkPos_excludeHit;
     std::vector<std::vector<TVector3>> fTrkDir_excludeHit;
-	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_maxDriftTime" + std::to_string(maxDriftTime) + ".root";
+	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_maxDriftTime" + std::to_string((int)maxDriftTime) + ".root";
 	TFile* f_out = new TFile(f_name_out.c_str(), "RECREATE");
 	TTree* t_out = new TTree("t", "t");
 
