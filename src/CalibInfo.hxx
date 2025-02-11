@@ -55,6 +55,10 @@ private:
     double const fdDoca = 0.1;
     //for percise XT
     double const fMaxR = 20.;
+    double const nShift = 90;
+    double const dShift = 0.1;
+    double const shiftOffset = -4.5;
+    double const maxShift = shiftOffset + nShift * dShift;
 };
 
 #endif

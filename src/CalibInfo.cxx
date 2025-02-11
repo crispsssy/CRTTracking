@@ -162,16 +162,20 @@ double const CalibInfo::GetTAtR(double r){
 double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 {
     double r = sqrt(x*x + y*y);
-    int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
-//    std::cout<<"shift is "<<shift<<" index is "<<index<<std::endl;
-    auto itr = fGraphs_x2t_mean.find(index);
-    if(itr == fGraphs_x2t_mean.end()){
-        itr = fGraphs_x2t_mean.find(45); //no shift
-    }
+    int index_low = (shift + 4.5) / 0.1; //0.5 for rounding
+    int index_high = index_low + 1;
+    double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
+//    std::cout<<"shift: index_low:index_high:coefficient "<<shift<<":"<<index_low<<":"<<index_high<<":"<<coefficient<<std::endl;
+    if(index_low >= nShift) index_low = nShift;
+    if(index_high >= nShift) index_high = nShift;
+    if(index_low < 0) index_low = 0;
+    if(index_high < 0) index_high = 0;
+    auto itr_low = fGraphs_x2t_mean.find(index_low);
+    auto itr_high = fGraphs_x2t_mean.find(index_high);
     if(r > fMaxR){
-        return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
+        return r * itr_low->second->Interpolate(fMaxR, 0) / fMaxR;
     }
-    double t = itr->second->Interpolate(x, y);
+    double t = coefficient * itr_low->second->Interpolate(x,y) + (1 - coefficient) * itr_high->second->Interpolate(x,y);
     return t;
 }
 
@@ -185,14 +189,18 @@ double const CalibInfo::GetTimeResolution(double r) const
 double const CalibInfo::GetTimeResolution(double const x, double const y, double const shift) const
 {
     double r = sqrt(x*x + y*y);
-    int index = (shift + 4.5) / 0.1 + 0.5; //0.5 for rounding
-    auto itr = fGraphs_x2t_std.find(index);
-    if(itr == fGraphs_x2t_std.end()){
-        itr = fGraphs_x2t_std.find(45); //no shift
-    }
+    int index_low = (shift + 4.5) / 0.1; //0.5 for rounding
+    int index_high = index_low + 1;
+    double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
+    if(index_low >= nShift) index_low = nShift;
+    if(index_high >= nShift) index_high = nShift;
+    if(index_low < 0) index_low = 0;
+    if(index_high < 0) index_high = 0;
+    auto itr_low = fGraphs_x2t_std.find(index_low);
+    auto itr_high = fGraphs_x2t_std.find(index_high);
     if(r > fMaxR){
-        return r * itr->second->Interpolate(fMaxR, 0) / fMaxR;
+        return r * itr_low->second->Interpolate(fMaxR, 0) / fMaxR;
     }
-    double sigma = itr->second->Interpolate(x, y);
+    double sigma = coefficient * itr_low->second->Interpolate(x,y) + (1 - coefficient) * itr_high->second->Interpolate(x,y);
     return sigma;
 }
