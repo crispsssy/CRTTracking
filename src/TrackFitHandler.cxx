@@ -79,23 +79,27 @@ void TrackFitHandler::ReFit(CDCLineCandidateContainer* tracks){
     for(std::shared_ptr<CDCLineCandidate> track : (*tracks)){
         std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
         fit->TrackFitting("XYZT");
-        std::shared_ptr<CDCLineCandidateContainer> tracks_residual = std::make_shared<CDCLineCandidateContainer>();
-        CDCHitContainer* hits_all = track->GetHits();
-        for(auto hit = hits_all->begin(); hit != hits_all->end(); ++hit){
-//            std::cout<<"Fitting track by excluding each hit to get residual, now "<<hit - hits_all->begin()<<" th hit"<<std::endl;
-            CDCHitContainer* hits = new CDCHitContainer();
-            std::copy(hits_all->begin(), hit, std::back_inserter(*hits));
-            std::copy(hit + 1, hits_all->end(), std::back_inserter(*hits));
-            std::shared_ptr<CDCLineCandidate> track_residual = std::make_shared<CDCLineCandidate>(*track);
-            track_residual->SetHits(hits);
-            fit->Clear();
-            fit->SetTrack(track_residual);
-            fit->TrackFitting("XYZT");
-            tracks_residual->push_back(track_residual);
-            (*hit)->SetResidual((*hit)->GetDriftTime(0) - CalibInfo::Get().GetDriftTime(track_residual->GetPos(), track_residual->GetDir(), (*hit)->GetChannelID()));
-        }
-        track->SetTrackResidual(tracks_residual);
+        CalculateResidual(track, fit);
     }
+}
+
+void TrackFitHandler::CalculateResidual(std::shared_ptr<CDCLineCandidate> track, std::shared_ptr<TrackFitMinimizerBase> fit){
+    std::shared_ptr<CDCLineCandidateContainer> tracks_residual = std::make_shared<CDCLineCandidateContainer>();
+    CDCHitContainer* hits_all = track->GetHits();
+    for(auto hit = hits_all->begin(); hit != hits_all->end(); ++hit){
+        //            std::cout<<"Fitting track by excluding each hit to get residual, now "<<hit - hits_all->begin()<<" th hit"<<std::endl;
+        CDCHitContainer* hits = new CDCHitContainer();
+        std::copy(hits_all->begin(), hit, std::back_inserter(*hits));
+        std::copy(hit + 1, hits_all->end(), std::back_inserter(*hits));
+        std::shared_ptr<CDCLineCandidate> track_residual = std::make_shared<CDCLineCandidate>(*track);
+        track_residual->SetHits(hits);
+        fit->Clear();
+        fit->SetTrack(track_residual);
+        fit->TrackFitting("XYZT");
+        tracks_residual->push_back(track_residual);
+        (*hit)->SetResidual((*hit)->GetDriftTime(0) - CalibInfo::Get().GetDriftTime(track_residual->GetPos(), track_residual->GetDir(), (*hit)->GetChannelID()));
+    }
+    track->SetTrackResidual(tracks_residual);
 }
 
 bool TrackFitHandler::IsGoodPair(std::shared_ptr<CDCLineCandidate> lineOdd, std::shared_ptr<CDCLineCandidate> lineEven){

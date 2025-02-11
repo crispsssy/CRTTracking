@@ -64,7 +64,7 @@ void TrackFitMinimizerZ::SetupParameters(std::string const& XTMode){
         fFit->SetMaxFunctionCalls(1e4);
         rhoStep = 1e-5;
         phiStep = 1e-5;
-        zStep = 0.5;
+        zStep = 1e-2;
         thetaStep = 1e-5;
         double dRho = 0.1;
         double dPhi = 1e-2;
@@ -78,6 +78,12 @@ void TrackFitMinimizerZ::SetupParameters(std::string const& XTMode){
         zMax = z + dZ;
         thetaMin = theta - dTheta;
         thetaMax = theta + dTheta;
+    }
+    if(runMode){
+        std::cout<<"rho : rhoMin : rhoMax "<<rho<<":"<<rhoMin<<":"<<rhoMax<<std::endl;
+        std::cout<<"phi : phiMin : phiMax "<<phi<<":"<<phiMin<<":"<<phiMax<<std::endl;
+        std::cout<<"z : zMin : zMax "<<z<<":"<<zMin<<":"<<zMax<<std::endl;
+        std::cout<<"theta : thetaMin : thetaMax "<<theta<<":"<<thetaMin<<":"<<thetaMax<<std::endl;
     }
     fFit->SetVariable(0,     "rho",          rho,               rhoStep);
     fFit->SetVariable(1,     "phi",          phi,               phiStep);
@@ -130,7 +136,7 @@ double TrackFitMinimizerZ::FittingFunctionXYZT(double const* pars)
         static int rr = 0;
         rr++;
         std::cout<<"++++++++++++++++++++++++++++++minimize round: "<<rr<<std::endl;
-        std::cout<<"rho : phi : z : theta "<<rho<<" : "<<phi<<" : "<<z<<" : "<<theta<<std::endl;
+        std::cout<<std::fixed<<std::setprecision(6)<<"rho : phi : z : theta "<<rho<<" : "<<phi<<" : "<<z<<" : "<<theta<<std::endl;
     }
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
