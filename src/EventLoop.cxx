@@ -2,7 +2,7 @@
 
 using RuntimePar::runMode;
 using RuntimePar::runNum;
-using RuntimePar::XTMode;
+using RuntimePar::maxDriftTime;
 
 void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, int numEvent){
 //	gInterpreter->GenerateDictionary("vector<TVector3>", "vector;TVector3.h");
@@ -44,7 +44,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
     std::vector<std::vector<double>> fResidual;
     std::vector<std::vector<TVector3>> fTrkPos_excludeHit;
     std::vector<std::vector<TVector3>> fTrkDir_excludeHit;
-	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_" + XTMode + ".root";
+	std::string f_name_out = f_out_path + "/recon_run" + Form("%05d", runNum) + "_maxDriftTime" + std::to_string(maxDriftTime) + ".root";
 	TFile* f_out = new TFile(f_name_out.c_str(), "RECREATE");
 	TTree* t_out = new TTree("t", "t");
 
