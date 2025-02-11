@@ -206,7 +206,7 @@ bool PreProcess::CrosstalkFilter(CDCHit* hit){
     std::vector<short> adcs = hit->GetADCs();
     short adcMax = *std::max_element(adcs.begin(), adcs.end());
     short adcMin = *std::min_element(adcs.begin(), adcs.end());
-    if(fabs(adcMin - fPedestal[chID]) > 0.8 * fabs(adcMax - fPedestal[chID])){
+    if(fabs(adcMin - fPedestal[chID]) > 0.6 * fabs(adcMax - fPedestal[chID])){
         filter = true;
     }
     return filter;
