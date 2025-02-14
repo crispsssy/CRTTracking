@@ -88,7 +88,7 @@ void TrackFitHandler::CalculateResidual(std::shared_ptr<CDCLineCandidate> track,
     CDCHitContainer* hits_all = track->GetHits();
     for(auto hit = hits_all->begin(); hit != hits_all->end(); ++hit){
         int channel = (*hit)->GetChannelID();
-        //            std::cout<<"Fitting track by excluding each hit to get residual, now "<<hit - hits_all->begin()<<" th hit"<<std::endl;
+        if(runMode) std::cout<<"Fitting track by excluding each hit to get residual, now "<<hit - hits_all->begin()<<" th hit, channel "<<channel<<std::endl;
         CDCHitContainer* hits = new CDCHitContainer();
         std::copy(hits_all->begin(), hit, std::back_inserter(*hits));
         std::copy(hit + 1, hits_all->end(), std::back_inserter(*hits));
