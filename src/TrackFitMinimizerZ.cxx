@@ -33,7 +33,7 @@ void TrackFitMinimizerZ::TrackFitting(std::string const& XTMode){
     fTrack->SetNdf( fTrack->GetHits()->size() - 4 );
     double const* pars = fFit->X();
     double const* errors = fFit->Errors();
-    std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
+//    std::cout<<"Minimum chi2 is "<<fFit->MinValue()<<std::endl;
     UpdateTrack(pars, errors);
 
 }
