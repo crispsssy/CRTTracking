@@ -12,8 +12,15 @@ TrackFitMinimizerFactory& TrackFitMinimizerFactory::Get()
 
 std::shared_ptr<TrackFitMinimizerBase> TrackFitMinimizerFactory::CreateTrackFitMinimizer(std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerName, std::string const& minimizerType)
 {
-    if(fCreators.count(minimizerName)){
-        return fCreators[minimizerName](track, minimizerType);
+    if(fMinimizers.count(minimizerName)){
+        auto minimizer = fMinimizers[minimizerName];
+        minimizer->Clear();
+        minimizer->SetTrack(track);
+        return minimizer;
     }
-    return nullptr;
+    else if(fCreators.count(minimizerName)){
+        fMinimizers[minimizerName] = fCreators[minimizerName](track, minimizerType);
+        return fMinimizers[minimizerName];
+    }
+    else return nullptr;
 }

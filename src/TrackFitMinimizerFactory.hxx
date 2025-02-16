@@ -23,6 +23,7 @@ private:
     static TrackFitMinimizerFactory* fTrackFitMinimizerFactory;
 
     std::unordered_map<std::string, CreateFunc> fCreators;
+    std::unordered_map<std::string, std::shared_ptr<TrackFitMinimizerBase>> fMinimizers;
 };
 
 #endif
