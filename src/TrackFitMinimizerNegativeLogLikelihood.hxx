@@ -13,14 +13,14 @@
 #include "TrackFitMinimizerBase.hxx"
 #include "TrackFitMinimizerFactory.hxx"
 
-class TrackFirMinimizerNegativeLogLikelihood : public TrackFitMinimizerBase{
+class TrackFitMinimizerNegativeLogLikelihood : public TrackFitMinimizerBase{
 public:
     TrackFitMinimizerNegativeLogLikelihood(std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType);
     void TrackFitting(std::string const& XTMode = "XYZT");
     
 private:
     void SetupParameters(std::string const& XTMode);
-    double FittingFcuntion(double const* pars);
+    double FittingFunction(double const* pars);
     void UpdateTrack(double const* pars, double const* errors);
 
     static bool registered;

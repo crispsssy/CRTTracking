@@ -24,6 +24,7 @@ set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
         ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerBase.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerDefault.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerZ.cxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerNegativeLogLikelihood.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/G__STL_Dictionary.cxx)

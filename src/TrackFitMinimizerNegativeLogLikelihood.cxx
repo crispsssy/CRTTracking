@@ -16,7 +16,7 @@ void TrackFitMinimizerNegativeLogLikelihood::TrackFitting(std::string const& XTM
     fFit->SetPrintLevel(runMode);
 
     std::function<double(double const*)> func = [this, XTMode](double const* pars){
-        return FittingFunction();
+        return FittingFunction(pars);
     };
     ROOT::Math::Functor functionFit(func, 4);
     fFit->SetFunction(functionFit);
@@ -33,13 +33,18 @@ void TrackFitMinimizerNegativeLogLikelihood::SetupParameters(std::string const& 
 
 }
 
+double TrackFitMinimizerNegativeLogLikelihood::FittingFunction(double const* pars)
+{
+    return 0.;
+}
+
 void TrackFitMinimizerNegativeLogLikelihood::UpdateTrack(double const* pars, double const* errors)
 {
 
 }
 
-bool TrackFitMinimzerNegativeLogLikelihood::registered = [](){
-    TrackFitMinimizerFactory::Get().RegisterTrackFitMinimzier("TrackFitMinimizerNegativeLogLikelihood",
+bool TrackFitMinimizerNegativeLogLikelihood::registered = [](){
+    TrackFitMinimizerFactory::Get().RegisterTrackFitMinimizer("TrackFitMinimizerNegativeLogLikelihood",
         [](std::shared_ptr<CDCLineCandidate> track, std::string const& minimizerType) {
             return std::make_shared<TrackFitMinimizerNegativeLogLikelihood>(track, minimizerType);
         }
