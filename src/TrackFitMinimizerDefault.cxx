@@ -106,7 +106,7 @@ double TrackFitMinimizerDefault::FittingFunctionRT(double const* pars){
     double phi        = pars[1];
     double alpha      = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     if(alpha == 0 ) alpha = 1e-20;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
@@ -122,10 +122,10 @@ double TrackFitMinimizerDefault::FittingFunctionRT(double const* pars){
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //		std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(DOCA);
-        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
+        chi2.Add( (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma) );
     }
-    //	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
-    return chi2;
+    //	std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2.Sum()<<std::endl;
+    return chi2.Sum();
 }
 
 double TrackFitMinimizerDefault::FittingFunctionXYZT(double const* pars)
@@ -134,7 +134,7 @@ double TrackFitMinimizerDefault::FittingFunctionXYZT(double const* pars)
     double phi        = pars[1];
     double alpha      = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -153,12 +153,12 @@ double TrackFitMinimizerDefault::FittingFunctionXYZT(double const* pars)
         double t_expect = CalibInfo::Get().GetDriftTime(trkPos, trkDir, channel, pos_cell, shift);
         if(runMode) std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
-        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
+        chi2.Add( (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma) );
     }
     if(runMode){
-        std::cout<<"chi2 = "<<chi2<<std::endl;
+        std::cout<<"chi2 = "<<chi2.Sum()<<std::endl;
     }
-    return chi2;
+    return chi2.Sum();
 }
 
 void TrackFitMinimizerDefault::UpdateTrack(double const* pars, double const* errors){
@@ -166,7 +166,6 @@ void TrackFitMinimizerDefault::UpdateTrack(double const* pars, double const* err
     double phi        = pars[1];
     double alpha      = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -244,7 +243,7 @@ double TrackFitMinimizerDefault::FittingFunctionRTT0(double const* pars){
     double alpha      = pars[2];
     double theta      = pars[3];
     double t0         = pars[4];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), rho * sin(phi_poca) / tan(alpha));
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -259,10 +258,10 @@ double TrackFitMinimizerDefault::FittingFunctionRTT0(double const* pars){
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(driftTime);
-        chi2 += pow(driftTime - t_expect, 2) / pow(sigma, 2);
+        chi2.Add( pow(driftTime - t_expect, 2) / pow(sigma, 2) );
     }
-    std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2<<std::endl;
-    return chi2;
+    std::cout<<"!!!!!!!!!!!!!!chi2: "<<chi2.Sum()<<std::endl;
+    return chi2.Sum();
 }
 
 bool TrackFitMinimizerDefault::registered = [](){

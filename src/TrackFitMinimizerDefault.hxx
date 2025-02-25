@@ -5,6 +5,7 @@
 #include <Math/Minimizer.h>
 #include <Math/Factory.h>
 #include <Math/Functor.h>
+#include <Math/Util.h>
 #include "CDCLineCandidate.hxx"
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"

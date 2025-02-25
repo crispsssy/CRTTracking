@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <Math/Util.h>
 #include "TrackFitMinimizerBase.hxx"
 #include "TrackFitMinimizerFactory.hxx"
 #include "CDCLineCandidate.hxx"

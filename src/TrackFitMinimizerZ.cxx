@@ -101,7 +101,7 @@ double TrackFitMinimizerZ::FittingFunctionRT(double const* pars){
     double phi        = pars[1];
     double z          = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), z);
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -114,9 +114,9 @@ double TrackFitMinimizerZ::FittingFunctionRT(double const* pars){
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(DOCA);
-        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
+        chi2.Add( (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma) );
     }
-    return chi2;
+    return chi2.Sum();
 }
 
 double TrackFitMinimizerZ::FittingFunctionXYZT(double const* pars)
@@ -125,7 +125,7 @@ double TrackFitMinimizerZ::FittingFunctionXYZT(double const* pars)
     double phi        = pars[1];
     double z          = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), z);
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -144,12 +144,12 @@ double TrackFitMinimizerZ::FittingFunctionXYZT(double const* pars)
         double t_expect = CalibInfo::Get().GetDriftTime(trkPos, trkDir, channel, pos_cell, shift);
         if(runMode) std::cout<<"x:y:shift "<<pos_cell.X()<<":"<<pos_cell.Y()<<":"<<shift<<" t_meas:t_expect:residual "<<driftTime<<":"<<t_expect<<":"<<driftTime - t_expect<<std::endl;
         double sigma = CalibInfo::Get().GetTimeResolution(pos_cell.X(), pos_cell.Y(), shift);
-        chi2 += (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma);
+        chi2.Add( (driftTime - t_expect) * (driftTime - t_expect) / (sigma * sigma) );
     }
     if(runMode){
-        std::cout<<"chi2 = "<<chi2<<std::endl;
+        std::cout<<"chi2 = "<<chi2.Sum()<<std::endl;
     }
-    return chi2;
+    return chi2.Sum();
 }
 
 void TrackFitMinimizerZ::UpdateTrack(double const* pars, double const* errors){
@@ -157,7 +157,7 @@ void TrackFitMinimizerZ::UpdateTrack(double const* pars, double const* errors){
     double phi        = pars[1];
     double z          = pars[2];
     double theta      = pars[3];
-    double chi2 = 0.;
+    ROOT::Math::KahanSum<double> chi2{0.0};
     double phi_poca = phi - TMath::Pi() / 2;
     TVector3 trkPos(rho * cos(phi_poca), rho * sin(phi_poca), z);
     TVector3 trkDir(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
