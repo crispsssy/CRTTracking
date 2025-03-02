@@ -21,7 +21,7 @@ int main(int argc, char** argv){
 
 	EventLoop(f_in_path, f_out_path, startEvent, numEvent);
 
-	app.Run();
+	if(RuntimePar::runMode) app.Run();
 
 	return 0;
 }
