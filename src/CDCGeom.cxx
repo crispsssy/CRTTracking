@@ -299,7 +299,7 @@ CDCWireInfo const& CDCGeom::GetWireInfo(int layerID_all, int localWireID_all) co
 {
     std::map<std::pair<int, int>, CDCWireInfo>::const_iterator itr;
     itr = fWireInfoMap.find(std::pair<int, int>(layerID_all, localWireID_all));
-    if(itr == fWireInfoMap.end()){ std::cout<<"GetWireInfo() can't find wireInfo"<<std::endl; exit(1); }
+    if(itr == fWireInfoMap.end()){ std::cout<<"GetWireInfo() can't find wireInfo at layerID_all:localWireID_all "<<layerID_all<<":"<<localWireID_all<<std::endl; exit(1); }
     else return itr->second;
 }
 
@@ -307,6 +307,6 @@ CDCWireInfo const& CDCGeom::GetWireInfo(int wire) const
 {
     std::pair<int, int> layerWire = fLayerWireMap.find(wire)->second;
     std::map<std::pair<int, int>, CDCWireInfo>::const_iterator itr = fWireInfoMap.find(layerWire);
-    if(itr == fWireInfoMap.end()){ std::cout<<"GetWireInfo() can't find wireInfo"<<std::endl; exit(1); }
+    if(itr == fWireInfoMap.end()){ std::cout<<"GetWireInfo() can't find wireInfo at wireID "<<wire<<std::endl; exit(1); }
     else return itr->second;
 }
