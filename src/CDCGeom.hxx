@@ -73,7 +73,7 @@ private:
 	double XHV[4992] = {0};
 	double YHV[4992] = {0};
 	double ZHV[4992] = {0};
-	double CDCLength = 1600.;
+	double CDCLength = 1532.;
 
 	static CDCGeom* fCDCGeom;
 	std::string fMapPath = "/Users/siyuan/Physics/comet/crt/tracking/ch_map/ch_map.root";
