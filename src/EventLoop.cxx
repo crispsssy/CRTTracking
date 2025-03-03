@@ -20,7 +20,11 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
     int tdcDiff0[48][32];
 	TFile* f_in = new TFile(f_in_path.c_str(), "READ");
 	TTree* t_in = (TTree*)f_in->Get("RECBE");
-	if(numEvent - startEvent > t_in->GetEntries()) numEvent = t_in->GetEntries();
+    if(startEvent >= t_in->GetEntries()){
+        std::cout<<"Start event larger than number of events in the data, abort."<<std::endl;
+        exit(0);
+    }
+	if(startEvent + numEvent > t_in->GetEntries()) numEvent = t_in->GetEntries() - startEvent;
 
 	PreProcess::Get().DetermineT0AndPedestal(t_in);
 
