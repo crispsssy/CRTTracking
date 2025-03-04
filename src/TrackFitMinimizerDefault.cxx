@@ -11,9 +11,6 @@ TrackFitMinimizerDefault::TrackFitMinimizerDefault(std::shared_ptr<CDCLineCandid
 void TrackFitMinimizerDefault::TrackFitting(std::string const& XTMode){
     if(!fTrack) return;
 
-    fFit->SetTolerance(0.001);
-    fFit->SetPrintLevel(runMode);
-
     std::function<double(double const*)> func = [this, XTMode](double const* pars){
         if(XTMode == "RT"){
             return this->FittingFunctionRT(pars);
@@ -57,7 +54,9 @@ void TrackFitMinimizerDefault::SetupParameters(std::string const& XTMode){
     double alphaMax = TMath::Pi()*2;
     double thetaMin = -TMath::Pi()*2;
     double thetaMax = TMath::Pi()*2;
+    fFit->SetTolerance(0.1);
     if(XTMode == "XYZT"){
+        fFit->SetTolerance(0.001);
         fFit->SetStrategy(2);
         fFit->SetMaxFunctionCalls(1e4);
         step = 1e-5;
