@@ -192,6 +192,10 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
             std::vector<TVector3> trkDir_residuals;
             CDCHitContainer* hits = (*track)->GetHits();
             std::shared_ptr<CDCLineCandidateContainer> trackResiduals = (*track)->GetTrackResidual();
+            if(!trackResiduals){
+                std::cout<<"not residual found in event "<<iEvent<<", track No."<<track - tracks->begin()<<std::endl;
+                continue;
+            }
             for(auto hit = hits->begin(); hit != hits->end(); ++hit){
                 channels.push_back((*hit)->GetChannelID());
                 posCells.push_back((*hit)->GetPosCell());
