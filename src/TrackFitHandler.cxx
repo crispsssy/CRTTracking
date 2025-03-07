@@ -150,6 +150,8 @@ std::shared_ptr<CDCLineCandidate> TrackFitHandler::FindInitialTrack(std::shared_
     double phiOdd = lineOdd->GetDir().Phi();
     double phiEven = lineEven->GetDir().Phi();
     double phi = (phiOdd + phiEven) / 2;
+    //if odd and even lines have opposite phis, use phi of pos.
+    if(fabs(phiOdd - phiEven) > TMath::Pi() / 2) phi = pos.Phi() + TMath::Pi() / 2;
 //    	std::cout<<"phiOdd:phiEven:phi "<<phiOdd<<":"<<phiEven<<":"<<phi<<std::endl;
 
     //Find theta and POCA.Z of the track
