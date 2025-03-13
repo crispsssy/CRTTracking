@@ -61,13 +61,13 @@ void TrackFitMinimizerZ::SetupParameters(std::string const& XTMode){
         fFit->SetTolerance(0.001);
         fFit->SetStrategy(2);
         fFit->SetMaxFunctionCalls(1e4);
-        rhoStep = 1e-5;
+        rhoStep = 1e-4;
         phiStep = 1e-5;
-        zStep = 0.1;
+        zStep = 1.;
         thetaStep = 1e-5;
-        double dRho = 0.1;
+        double dRho = 0.5;
         double dPhi = 1e-2;
-        double dZ = 2;
+        double dZ = 5;
         double dTheta = 1e-2;
         rhoMin = rho - dRho;
         rhoMax = rho + dRho;
