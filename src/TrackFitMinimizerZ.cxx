@@ -108,7 +108,7 @@ double TrackFitMinimizerZ::FittingFunctionRT(double const* pars){
     for(auto hit = fTrack->GetHits()->begin(); hit != fTrack->GetHits()->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         double driftTime = (*hit)->GetDriftTime(0);
-        if(driftTime > 400) continue;
+        if(driftTime > fRTMaxDriftTime) continue;
         double DOCA = CDCGeom::Get().GetDOCA(trkPos, trkDir, channel);
         double t_expect = CalibInfo::Get().GetTAtR(DOCA);
         //      std::cout<<"DOCA:t_meas:t_expect "<<DOCA<<":"<<driftTime<<":"<<t_expect<<std::endl;
