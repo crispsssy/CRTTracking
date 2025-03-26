@@ -9,6 +9,7 @@
 #include <TGraph.h>
 #include <TLine.h>
 #include <TMarker.h>
+#include <TFitResult.h>
 #include "CDCHit.hxx"
 #include "CDCGeom.hxx"
 #include "RuntimeParameter.hxx"
@@ -18,6 +19,9 @@ public:
 	~PreProcess();
 	static PreProcess& Get();
 	void DetermineT0AndPedestal(TTree* t_in);
+    bool ReadT0AndPedestal();
+    double FitT0(TH1I* h_tdc, TFitResultPtr& p);
+    double GetT0(int const channel);
 	CDCHit* CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC);
     bool FrequencyDomainFilter(CDCHit* hit);
     bool CrosstalkFilter(CDCHit* hit);
@@ -27,7 +31,7 @@ private:
 	PreProcess();
 	PreProcess(PreProcess const& src){}
 	PreProcess& operator=(PreProcess const& rhs);
-	int fT0 = -1740;
+    std::map<int, double> fT0;
 	short fPedestal[4992] = {0};
     bool fRunMode = true;
 	bool fADCSumCut = true;
