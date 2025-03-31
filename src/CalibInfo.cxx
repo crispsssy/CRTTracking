@@ -183,7 +183,7 @@ double const CalibInfo::GetTAtR(double r){
 double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 {
     double r = sqrt(x*x + y*y);
-    int index_low = (shift + 4.5) / 0.1; //0.5 for rounding
+    int index_low = (shift - shiftOffset) / dShift;
     int index_high = index_low + 1;
     double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
 //    std::cout<<"shift: index_low:index_high:coefficient "<<shift<<":"<<index_low<<":"<<index_high<<":"<<coefficient<<std::endl;
@@ -196,7 +196,7 @@ double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
     if(r > fMaxR){
         return r * itr_low->second->Interpolate(fMaxR, 0) / fMaxR;
     }
-    double t = coefficient * itr_low->second->Interpolate(x,y) + (1 - coefficient) * itr_high->second->Interpolate(x,y);
+    double t = (1 - coefficient) * itr_low->second->Interpolate(x,y) + coefficient * itr_high->second->Interpolate(x,y);
     return t;
 }
 
@@ -210,7 +210,7 @@ double const CalibInfo::GetTimeResolution(double r) const
 double const CalibInfo::GetTimeResolution(double const x, double const y, double const shift) const
 {
     double r = sqrt(x*x + y*y);
-    int index_low = (shift + 4.5) / 0.1; //0.5 for rounding
+    int index_low = (shift - shiftOffset) / dShift;
     int index_high = index_low + 1;
     double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
     if(index_low >= nShift) index_low = nShift - 1;
@@ -222,6 +222,6 @@ double const CalibInfo::GetTimeResolution(double const x, double const y, double
     if(r > fMaxR){
         return r * itr_low->second->Interpolate(fMaxR, 0) / fMaxR;
     }
-    double sigma = coefficient * itr_low->second->Interpolate(x,y) + (1 - coefficient) * itr_high->second->Interpolate(x,y);
+    double sigma = (1 - coefficient) * itr_low->second->Interpolate(x,y) + coefficient * itr_high->second->Interpolate(x,y);
     return sigma;
 }
