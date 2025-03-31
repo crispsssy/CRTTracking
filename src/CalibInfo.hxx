@@ -61,7 +61,6 @@ private:
     double const shiftOffset = -4.5;
     double const maxShift = shiftOffset + nShift * dShift;
 
-    TGraph* g_tmp;
 };
 
 #endif
