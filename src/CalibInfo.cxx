@@ -1,4 +1,5 @@
 #include "CalibInfo.hxx"
+#include <TCanvas.h>
 
 using RuntimePar::XTMode;
 using RuntimePar::XT_reso_x;
@@ -73,7 +74,9 @@ double CalibInfo::CalculateDriftTime(double const* pars){
     TVector3 pos = fCurrentTrkPos + lambda * fCurrentTrkDir;
     TVector2 posCell = CDCGeom::Get().LocalPositionToCellPositionXY(pos, fCurrentChannel);
     double shift = CDCGeom::Get().GetCellShift(pos.Z(), fCurrentChannel);
-    return GetTAtXYShift(posCell.X(), posCell.Y(), shift);
+    double t = GetTAtXYShift(posCell.X(), posCell.Y(), shift);
+//    std::cout<<"posCell:shift:lambda:driftTime ("<<posCell.X()<<", "<<posCell.Y()<<"):"<<shift<<":"<<lambda<<":"<<t<<std::endl;
+    return t;
 }
 
 void CalibInfo::GenerateSimpleXT(){
@@ -156,14 +159,17 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
 }
 
 double CalibInfo::ScanAlongLambda(){
-    static unsigned int const nStep = 10;
+    static unsigned int const nStep = 40;
+    static double const xMin = -10.;
+    static double const xMax = 10.;
+    static double const dx = (xMax - xMin) / nStep;
     static double* x = new double[nStep];
     static double* y = new double[nStep];
     static double* pars = new double(0.);
     unsigned int index = 0;
     double minValue = 1e9;
     for(int i=0; i<nStep; ++i){
-        pars[0] = -10 + 2 * i;
+        pars[0] = -10 + dx * i;
         x[i] = pars[0];
         y[i] = CalculateDriftTime(pars);
         if(y[i] < minValue){
