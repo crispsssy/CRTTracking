@@ -142,8 +142,9 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
         };
         ROOT::Math::Functor functionRT(func, 4);
         fFit->SetFunction(functionRT);
-        fFit->SetVariable(0,       "lambda",      0.,      1.);
-        fFit->SetVariableLimits(0,      -10.,     10.);
+        lambda = ScanAlongLambda();
+        fFit->SetVariable(0,       "lambda",      lambda,      1.);
+        fFit->SetVariableLimits(0,    lambda - 5.,    lambda + 5.);
         fFit->Minimize();
         t = fFit->MinValue();
         lambda = fFit->X()[0];
@@ -152,6 +153,25 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
     posCell = CDCGeom::Get().LocalPositionToCellPositionXY(posLocal, channel);
     shift = CDCGeom::Get().GetCellShift(posLocal.Z(), channel);
     return t;
+}
+
+double CalibInfo::ScanAlongLambda(){
+    static unsigned int const nStep = 10;
+    static double* x = new double[nStep];
+    static double* y = new double[nStep];
+    static double* pars = new double(0.);
+    unsigned int index = 0;
+    double minValue = 1e9;
+    for(int i=0; i<nStep; ++i){
+        pars[0] = -10 + 2 * i;
+        x[i] = pars[0];
+        y[i] = CalculateDriftTime(pars);
+        if(y[i] < minValue){
+            index = i;
+            minValue = y[i];
+        }
+    }
+    return x[index];
 }
 
 double const CalibInfo::GetTAtR(double r){

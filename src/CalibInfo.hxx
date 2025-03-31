@@ -35,6 +35,7 @@ private:
     void ReadXTTable();
     void GenerateSimpleXT();
     void SetupMinimizer();
+    double ScanAlongLambda();
     double CalculateDriftTime(double const* pars); //only for minimization usage
 
     TGraph* fSimpleXTGraph;
@@ -59,6 +60,8 @@ private:
     double const dShift = 0.1;
     double const shiftOffset = -4.5;
     double const maxShift = shiftOffset + nShift * dShift;
+
+    TGraph* g_tmp;
 };
 
 #endif
