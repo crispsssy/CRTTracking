@@ -60,7 +60,7 @@ void CalibInfo::ReadXTTable(){
 }
 
 void CalibInfo::SetupMinimizer(){
-    fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Simplex");
+    fFit = ROOT::Math::Factory::CreateMinimizer("Minuit2");
     if(!fFit){
         std::cerr<<"Can not create minimizer"<<std::endl;
         exit(-1);
