@@ -147,7 +147,7 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
         fFit->SetFunction(functionRT);
         lambda = ScanAlongLambda();
         fFit->SetVariable(0,       "lambda",      lambda,      1.);
-        fFit->SetVariableLimits(0,    lambda - 5.,    lambda + 5.);
+        fFit->SetVariableLimits(0,    lambda - 1.,    lambda + 1.);
         fFit->Minimize();
         t = fFit->MinValue();
         lambda = fFit->X()[0];
