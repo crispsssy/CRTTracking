@@ -159,7 +159,7 @@ double const CalibInfo::GetDriftTime(TVector3 const& trkPos, TVector3 const& trk
 }
 
 double CalibInfo::ScanAlongLambda(){
-    static unsigned int const nStep = 40;
+    static unsigned int const nStep = 100;
     static double const xMin = -10.;
     static double const xMax = 10.;
     static double const dx = (xMax - xMin) / nStep;
