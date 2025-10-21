@@ -240,7 +240,7 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 			else if(*tdc < T0 - 20) continue;
 			else{
 				int driftTDC = *tdc - T0;
-				if(driftTDC < 0) driftTDC = 0;
+				if(driftTDC < 0) driftTDC = 0; //FIXME is this really needed?
 				double driftTime = (double)driftTDC * 1000 / 960; //TDC sampling rate 960MHz to ns
 				hit->InsertDriftTime(driftTime);
 			}

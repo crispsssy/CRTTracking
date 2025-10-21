@@ -26,7 +26,7 @@ public:
     std::vector<short> const& GetADCs() const { return fADC; }
 	int const GetChannelID() const { return fChannelID; }
 	double const GetDriftTime(int index) const { return fDriftTime.at(index); }
-	std::vector<double> const GetDriftTime() const { return fDriftTime; }
+	std::vector<double> const& GetDriftTime() const { return fDriftTime; }
 	double const GetDOCA() const { return fDOCA; }
 	double const GetZ() const { return fZ; }
 	double const GetDriftDistance(int index) const { return fDriftDistance.at(index); }
