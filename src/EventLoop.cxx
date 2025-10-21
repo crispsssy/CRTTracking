@@ -86,7 +86,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 				std::vector<int> thisTDC;
 				for(int iSample = 0; iSample < 32; ++iSample){
 					thisADC.push_back(adc[iCh][iSample]);
-					thisTDC.push_back(tdcDiff[iCh][iSample] - tdcDiff0[0][0]);
+					if(tdcNhit[iCh] > iSample) thisTDC.push_back(tdcDiff[iCh][iSample] - tdcDiff0[0][0]);
 				}
 
 				CDCHit* rawHit = new CDCHit(iCh);
