@@ -203,6 +203,11 @@ double PreProcess::GetT0(int const channel){
     return itr->second;
 }
 
+double PreProcess::GetPedestal(int const channel){
+    if(channel < 4992) return fPedestal[channel];
+    else return 999;
+}
+
 CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC){
 	int layer = CDCGeom::Get().ChannelToLayer(channel);
 	if(layer == 0 || layer == 19) return nullptr;

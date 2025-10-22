@@ -22,6 +22,7 @@ public:
     bool ReadT0AndPedestal();
     double FitT0(TH1I* h_tdc, TFitResultPtr& p);
     double GetT0(int const channel);
+    double GetPedestal(int const channel);
 	CDCHit* CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC);
     bool FrequencyDomainFilter(CDCHit* hit);
     bool CrosstalkFilter(CDCHit* hit);
