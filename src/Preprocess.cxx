@@ -33,11 +33,11 @@ void PreProcess::DetermineT0AndPedestal(TTree* t_in){
 	short adc[4992][32];
 	int tdcDiff[4992][32];
     int tdcDiff0[48][32];
-	TH1I* h_tdc = new TH1I("h_tdc", "h_tdc", 2000, -1000, 1000);
+	TH1I* h_tdc = new TH1I("h_tdc", "h_tdc", 3000, -2000, 1000);
     int const nBoard = 104;
     TH1I* h_tdc_board[nBoard];
     for(int i=0; i<104; ++i){
-        h_tdc_board[i] = new TH1I(Form("h_tdc_%d", i), Form("T0 distribution at board %d", i), 2000, -1000, 1000);
+        h_tdc_board[i] = new TH1I(Form("h_tdc_%d", i), Form("T0 distribution at board %d", i), 3000, -2000, 1000);
     }
 	gDirectory->GetList()->Remove(h_tdc);
 	TH1S* h_pedestal[4992];
