@@ -25,6 +25,7 @@ protected:
     std::shared_ptr<CDCLineCandidate> fTrack;
     std::unique_ptr<ROOT::Math::Minimizer> fFit;
     double fRTMaxDriftTime = 300.;
+    double fMaxDriftTime = 0.;
 };
 
 #endif
