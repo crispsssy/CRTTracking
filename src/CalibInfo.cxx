@@ -189,6 +189,7 @@ double const CalibInfo::GetTAtR(double r){
 double const CalibInfo::GetTAtXYShift(double x, double y, double shift)
 {
     double r = sqrt(x*x + y*y);
+    if(r <= 5) return GetTAtR(r);
     int index_low = (shift - shiftOffset) / dShift;
     int index_high = index_low + 1;
     double coefficient = fmod(shift - shiftOffset, dShift) / dShift;
