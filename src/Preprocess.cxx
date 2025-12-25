@@ -245,7 +245,6 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 			else if(*tdc < T0 - 20) continue;
 			else{
 				int driftTDC = *tdc - T0;
-				if(driftTDC < 0) driftTDC = 0; //FIXME is this really needed?
 				double driftTime = (double)driftTDC * 1000 / 960; //TDC sampling rate 960MHz to ns
 				hit->InsertDriftTime(driftTime);
 			}
@@ -305,7 +304,7 @@ bool PreProcess::CrosstalkFilter(CDCHit* hit){
     std::vector<short> adcs = hit->GetADCs();
     short adcMax = *std::max_element(adcs.begin(), adcs.end());
     short adcMin = *std::min_element(adcs.begin(), adcs.end());
-    if(fabs(adcMin - fPedestal[chID]) > 0.6 * fabs(adcMax - fPedestal[chID])){
+    if(fabs(adcMin - fPedestal[chID]) > 0.3 * fabs(adcMax - fPedestal[chID])){
         filter = true;
     }
     return filter;
