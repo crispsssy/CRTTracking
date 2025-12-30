@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(CRTTracking)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(ROOT REQUIRED)
 include_directories(${ROOT_INCLUDE_DIRS})
@@ -32,11 +32,15 @@ add_library(Tracking SHARED ${SOURCES})
 target_include_directories(Tracking PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(Tracking ${ROOT_LIBRARIES} ROOT::Gui)
 
-add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cxx)
+add_executable(CRTTracking ${CMAKE_CURRENT_SOURCE_DIR}/app/CRTTracking.cxx)
 target_link_libraries(CRTTracking PUBLIC Tracking)
+
+add_executable(UpdateXT ${CMAKE_CURRENT_SOURCE_DIR}/app/UpdateXT.cxx)
+target_link_libraries(UpdateXT PUBLIC Tracking)
 
 target_compile_definitions(Tracking PRIVATE XT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/xt")
 target_compile_definitions(Tracking PRIVATE CH_MAP="${CMAKE_CURRENT_SOURCE_DIR}/ch_map")
 
 install(TARGETS CRTTracking
+                UpdateXT
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)
