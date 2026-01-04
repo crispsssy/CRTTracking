@@ -46,6 +46,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	std::vector<double> fErr_theta;
     std::vector<std::vector<int>> fChannel;
     std::vector<std::vector<TVector2>> fPosCell;
+    std::vector<std::vector<double>> fDriftTime;
     std::vector<std::vector<double>> fResidual;
     std::vector<std::vector<TVector3>> fTrkPos_excludeHit;
     std::vector<std::vector<TVector3>> fTrkDir_excludeHit;
@@ -65,6 +66,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	t_out->Branch("err_theta", &fErr_theta);
     t_out->Branch("channel", &fChannel);
     t_out->Branch("posCell", &fPosCell);
+    t_out->Branch("driftTime", &fDriftTime);
     t_out->Branch("residual", &fResidual);
     t_out->Branch("trkPos_excludeHit", &fTrkPos_excludeHit);
     t_out->Branch("trkDir_excludeHit", &fTrkDir_excludeHit);
@@ -171,6 +173,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		std::vector<double> err_theta;
         std::vector<std::vector<int>> channel;
         std::vector<std::vector<TVector2>> posCell;
+        std::vector<std::vector<double>> driftTime;
         std::vector<std::vector<double>> residual;
         std::vector<std::vector<TVector3>> trkPos_excludeHit;
         std::vector<std::vector<TVector3>> trkDir_excludeHit;
@@ -187,6 +190,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 			err_theta.push_back( (*track)->GetThetaError() );
             std::vector<int> channels;
             std::vector<TVector2> posCells;
+            std::vector<double> driftTimes;
             std::vector<double> residuals;
             std::vector<TVector3> trkPos_residuals;
             std::vector<TVector3> trkDir_residuals;
@@ -199,12 +203,14 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
             for(auto hit = hits->begin(); hit != hits->end(); ++hit){
                 channels.push_back((*hit)->GetChannelID());
                 posCells.push_back((*hit)->GetPosCell());
+                driftTimes.push_back((*hit)->GetDriftTime(0)); //only save the first TDC
                 residuals.push_back((*hit)->GetResidual());
                 trkPos_residuals.push_back(trackResiduals->at(hit - hits->begin())->GetPos());
                 trkDir_residuals.push_back(trackResiduals->at(hit - hits->begin())->GetDir());
             }
             channel.push_back(std::move(channels));
             posCell.push_back(std::move(posCells));
+            driftTime.push_back(std::move(driftTimes));
             residual.push_back(std::move(residuals));
             trkPos_excludeHit.push_back(std::move(trkPos_residuals));
             trkDir_excludeHit.push_back(std::move(trkDir_residuals));
@@ -221,6 +227,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		fErr_theta = std::move(err_theta);
         fChannel = std::move(channel);
         fPosCell = std::move(posCell);
+        fDriftTime = std::move(driftTime);
         fResidual = std::move(residual);
         fTrkPos_excludeHit = std::move(trkPos_excludeHit);
         fTrkDir_excludeHit = std::move(trkDir_excludeHit);
