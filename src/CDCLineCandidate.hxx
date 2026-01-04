@@ -14,7 +14,7 @@ class CDCLineCandidate
 {
 public:
 	CDCLineCandidate();
-        CDCLineCandidate(TVector3 const& pos, TVector3 const& dir,  bool const oddEven = 0);
+    CDCLineCandidate(TVector3 const& pos, TVector3 const& dir,  bool const oddEven = 0);
 //	CDCLineCandidate(CDCHitContainer* hits, double rho, double phi, double theta = 0.);
 	~CDCLineCandidate();
 

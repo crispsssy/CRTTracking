@@ -17,9 +17,9 @@ TrackFitHandler& TrackFitHandler::Get(){
     return *fTrackFitHandler;
 }
 
-CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContainer* lines){
+std::shared_ptr<CDCLineCandidateContainer> TrackFitHandler::Find3DTracks(std::shared_ptr<CDCLineCandidateContainer> lines){
     std::vector<std::map<unsigned int, std::shared_ptr<CDCLineCandidate>>> pairs;
-    CDCLineCandidateContainer* tracks = new CDCLineCandidateContainer();
+    std::shared_ptr<CDCLineCandidateContainer> tracks = std::make_shared<CDCLineCandidateContainer>();
     //Preprocess of line candidates
     for(auto lineOdd = lines->begin(); lineOdd != lines->end(); ++lineOdd){
         //pick a odd layer candidate
@@ -41,8 +41,6 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
     //Number of track cut
     if(numTrackCut !=0 && pairs.size() > numTrackCut){
         std::cout<<"number of pairs "<<pairs.size()<<" been cut"<<std::endl;
-        delete tracks;
-        tracks = nullptr;
         return nullptr;
     }
 
@@ -75,7 +73,7 @@ CDCLineCandidateContainer* TrackFitHandler::Find3DTracks(CDCLineCandidateContain
     return tracks;
 }
 
-void TrackFitHandler::ReFit(CDCLineCandidateContainer* tracks){
+void TrackFitHandler::ReFit(std::shared_ptr<CDCLineCandidateContainer> tracks){
     for(std::shared_ptr<CDCLineCandidate> track : (*tracks)){
         std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
         fit->TrackFitting("XYZT");

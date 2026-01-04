@@ -114,7 +114,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 */
 
 		//Hough transform
-		CDCLineCandidateContainer* lines = HoughHandler::Get().FindCandidates(hits);
+		std::shared_ptr<CDCLineCandidateContainer> lines = HoughHandler::Get().FindCandidates(hits);
 		if(!lines){
 //			std::cout<<"no candidate found after Hough transform at entry "<<iEvent<<", abort this entry"<<std::endl;
 			continue;
@@ -156,7 +156,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 
 
 		//3D Fitting
-		CDCLineCandidateContainer* tracks = TrackFitHandler::Get().Find3DTracks(lines);
+		std::shared_ptr<CDCLineCandidateContainer> tracks = TrackFitHandler::Get().Find3DTracks(lines);
 		if(!tracks){
 			continue;
 		}
@@ -240,11 +240,6 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
             EventDisplay::Get().DrawEventDisplay(tracks, iEvent);
             std::cout<<"3D fitting finished for entry "<<iEvent<<std::endl;
         }
-
-
-		//release memory
-        delete tracks;
-        delete lines;
 
 		if( (iEvent+1) % 100 == 0) std::cout<<"Preprocessed events: "<<iEvent + 1 - startEvent<<std::endl;
 	}

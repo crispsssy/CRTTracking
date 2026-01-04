@@ -26,8 +26,8 @@ public:
 	void DrawHits(CDCHitContainer* hits, int event);
 	void DrawCDCXY();
 	void DrawCDCZY();
-	void DrawLineCandidates(CDCLineCandidateContainer* lines, int event);
-	void DrawEventDisplay(CDCLineCandidateContainer* tracks, int event);
+	void DrawLineCandidates(std::shared_ptr<CDCLineCandidateContainer> lines, int event);
+	void DrawEventDisplay(std::shared_ptr<CDCLineCandidateContainer> tracks, int event);
 	void HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int_t y);
 
 private:

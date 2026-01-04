@@ -16,8 +16,8 @@
 class TrackFitHandler{
 public:
     static TrackFitHandler& Get();
-    CDCLineCandidateContainer* Find3DTracks(CDCLineCandidateContainer* lines);
-    void ReFit(CDCLineCandidateContainer* tracks);
+    std::shared_ptr<CDCLineCandidateContainer> Find3DTracks(std::shared_ptr<CDCLineCandidateContainer> lines);
+    void ReFit(std::shared_ptr<CDCLineCandidateContainer> tracks);
     void CalculateResidual(std::shared_ptr<CDCLineCandidate> track, std::shared_ptr<TrackFitMinimizerBase> fit);
 
 private:

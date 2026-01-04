@@ -153,7 +153,7 @@ void EventDisplay::DrawCDCZY(){
 	cdcHVLowerWall->Draw();
 }
 
-void EventDisplay::DrawLineCandidates(CDCLineCandidateContainer* lines, int event){
+void EventDisplay::DrawLineCandidates(std::shared_ptr<CDCLineCandidateContainer> lines, int event){
 	//Draw Hits
 	CDCHitContainer totalHits;
 	for(auto line = lines->begin(); line != lines->end(); ++line){
@@ -192,7 +192,7 @@ void EventDisplay::DrawLineCandidates(CDCLineCandidateContainer* lines, int even
 	std::cout<<"Drawn candidates"<<std::endl;
 }
 
-void EventDisplay::DrawEventDisplay(CDCLineCandidateContainer* tracks, int event){
+void EventDisplay::DrawEventDisplay(std::shared_ptr<CDCLineCandidateContainer> tracks, int event){
 	//Draw CDC
 	TCanvas* c = new TCanvas();
 	fCanvases.push_back(c);
