@@ -19,7 +19,7 @@ public:
 	~CDCLineCandidate();
 
 //	void SetCandidate(double rho, double phi, double theta){ fRho = rho; fPhi = phi; fTheta = theta; }
-	void AddHit(CDCHit* hit){ fHits->push_back(hit); }
+	void AddHit(std::shared_ptr<CDCHit> hit){ fHits->push_back(hit); }
 
 	void SetPos(TVector3 pos) { fPos = pos; }
 	void SetDir(TVector3 dir) { fDir = dir; }
@@ -40,7 +40,7 @@ public:
 	inline double const GetAlphaError() const { return fErr_alpha; }
 	inline double const GetThetaError() const { return fErr_theta; }
 	CDCHitContainer* GetHits() const { return fHits; }
-	CDCHit* GetHit(int const hit_index) const { return fHits->at(hit_index); }
+	std::shared_ptr<CDCHit> GetHit(int const hit_index) const { return fHits->at(hit_index); }
     std::shared_ptr<CDCLineCandidateContainer> GetTrackResidual() const { return fTrackResidual; }
 	inline bool const GetOddEven() const { return fOddEven; }
 	double const GetXAtY(double y) const;

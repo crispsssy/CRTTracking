@@ -91,10 +91,10 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 					if(tdcNhit[iCh] > iSample) thisTDC.push_back(tdcDiff[iCh][iSample] - tdcDiff0[0][0]);
 				}
 
-				CDCHit* rawHit = new CDCHit(iCh);
+				std::shared_ptr<CDCHit> rawHit = std::make_shared<CDCHit>(iCh);
 				rawHits->push_back(rawHit);
 
-				CDCHit* hit = PreProcess::Get().CheckHit(iCh, thisADC, thisTDC);
+				std::shared_ptr<CDCHit> hit = PreProcess::Get().CheckHit(iCh, thisADC, thisTDC);
 				if(!hit) continue;
 				hits->push_back( hit );
 			}
@@ -245,9 +245,6 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 		//release memory
         delete tracks;
         delete lines;
-		for(auto hit = rawHits->begin(); hit != rawHits->end(); ++hit){
-			delete *hit;
-		}
 
 		if( (iEvent+1) % 100 == 0) std::cout<<"Preprocessed events: "<<iEvent + 1 - startEvent<<std::endl;
 	}

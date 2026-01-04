@@ -48,7 +48,7 @@ private:
     double fResidual;
 };
 
-class CDCHitContainer : public std::vector<CDCHit*>
+class CDCHitContainer : public std::vector<std::shared_ptr<CDCHit>>
 {
 public:
 

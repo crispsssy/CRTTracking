@@ -184,7 +184,7 @@ std::shared_ptr<CDCLineCandidate> TrackFitHandler::FindInitialTrack(std::shared_
         double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
         (*hitOdd)->SetZ(z);
         //		std::cout<<"z position of hit "<<z<<std::endl;
-        CDCHit* hit = new CDCHit(**hitOdd);
+        std::shared_ptr<CDCHit> hit = *hitOdd;
         track->AddHit(hit);
     } 
     for(auto hitEven = lineEven->GetHits()->begin(); hitEven != lineEven->GetHits()->end(); ++hitEven){
@@ -192,7 +192,7 @@ std::shared_ptr<CDCLineCandidate> TrackFitHandler::FindInitialTrack(std::shared_
         double z = CDCGeom::Get().GetWireTrackIntersectionZY(track, channel).X();
         (*hitEven)->SetZ(z);
         //		std::cout<<"z position of hit "<<z<<std::endl;
-        CDCHit* hit = new CDCHit(**hitEven);
+        std::shared_ptr<CDCHit> hit = *hitEven;
         track->AddHit(hit);
     }
 

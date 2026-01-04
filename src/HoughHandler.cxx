@@ -35,7 +35,7 @@ CDCLineCandidateContainer* HoughHandler::FindCandidates(CDCHitContainer* hits){
 	CDCHitContainer remainHits = *hits;
 	for(int itr = 0; itr < maxItr; ++itr){
 //		if(runMode) std::cout<<"start "<<itr<<"th iteration of hough transform"<<std::endl;
-		for(std::vector<CDCHit*>::const_iterator hit = remainHits.begin(); hit != remainHits.end(); ++hit){
+		for(std::vector<std::shared_ptr<CDCHit>>::const_iterator hit = remainHits.begin(); hit != remainHits.end(); ++hit){
 			for(int iFillPhi = 0; iFillPhi < nFillPhi; ++iFillPhi){
 				int channel = (*hit)->GetChannelID();
 				TVector2 pos = CDCGeom::Get().ChannelToROPos(channel);

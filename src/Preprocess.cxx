@@ -208,7 +208,7 @@ double PreProcess::GetPedestal(int const channel){
     else return 999;
 }
 
-CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC){
+std::shared_ptr<CDCHit> PreProcess::CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC){
 	int layer = CDCGeom::Get().ChannelToLayer(channel);
 	if(layer == 0 || layer == 19) return nullptr;
 
@@ -236,7 +236,7 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
         }
     }
 
-	CDCHit* hit = new CDCHit(channel);
+	std::shared_ptr<CDCHit> hit = std::make_shared<CDCHit>(channel);
 
     //T0 cut
 	if(fTDCCut){	
@@ -252,8 +252,6 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
 	}
 	
 	if(hit->GetDriftTime().size() == 0){
-        delete hit;
-        hit = nullptr;
         return nullptr;
     }
 
@@ -261,19 +259,17 @@ CDCHit* PreProcess::CheckHit(int const channel, std::vector<short> const& thisAD
     hit->SetADCs(thisADC);
     //Frequency domain filter and Crosstalk filter
     if(FrequencyDomainFilter(hit)){
-        delete hit;
-        hit = nullptr;
         if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" by frequency domain filter"<<std::endl;
+        return nullptr;
     }
     else if(CrosstalkFilter(hit)){
-        delete hit;
-        hit = nullptr;
         if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" by crosstalk filter"<<std::endl;
+        return nullptr;
     }
 	return hit;
 }
 
-bool PreProcess::FrequencyDomainFilter(CDCHit* hit){
+bool PreProcess::FrequencyDomainFilter(std::shared_ptr<CDCHit> hit){
     bool filter = false;
     int chID = hit->GetChannelID();
     std::vector<short> adcs = hit->GetADCs();
@@ -298,7 +294,7 @@ bool PreProcess::FrequencyDomainFilter(CDCHit* hit){
     return filter;
 }
 
-bool PreProcess::CrosstalkFilter(CDCHit* hit){
+bool PreProcess::CrosstalkFilter(std::shared_ptr<CDCHit> hit){
     bool filter = false;
     int chID = hit->GetChannelID();
     std::vector<short> adcs = hit->GetADCs();
