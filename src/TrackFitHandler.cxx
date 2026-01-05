@@ -76,7 +76,7 @@ std::shared_ptr<CDCLineCandidateContainer> TrackFitHandler::Find3DTracks(std::sh
 void TrackFitHandler::ReFit(std::shared_ptr<CDCLineCandidateContainer> tracks){
     for(std::shared_ptr<CDCLineCandidate> track : (*tracks)){
         std::shared_ptr<TrackFitMinimizerBase> fit = TrackFitMinimizerFactory::Get().CreateTrackFitMinimizer(track);
-        fit->TrackFitting("XYZT");
+        fit->TrackFitting(XTMode);
         CalculateResidual(track, fit);
     }
 }
@@ -94,7 +94,7 @@ void TrackFitHandler::CalculateResidual(std::shared_ptr<CDCLineCandidate> track,
         track_residual->SetHits(hits);
         fit->Clear();
         fit->SetTrack(track_residual);
-        fit->TrackFitting("XYZT");
+        fit->TrackFitting(XTMode);
         tracks_residual->push_back(track_residual);
         //calculate residual
         TVector3 pocaT;

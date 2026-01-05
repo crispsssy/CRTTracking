@@ -9,7 +9,7 @@ namespace RuntimePar
     bool const runMode = 0;
 	int startEvent = 0;
 	int const nCh = 4992;
-	std::string XTMode("XYZT");
+	std::string XTMode("RT");
 
 	//for Preprocess
 	bool const tdcCut = true;
