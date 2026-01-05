@@ -26,6 +26,8 @@ set(SOURCES     ${CMAKE_CURRENT_SOURCE_DIR}/src/CDCHit.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerZ.cxx
         ${CMAKE_CURRENT_SOURCE_DIR}/src/TrackFitMinimizerNegativeLogLikelihood.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/CalibInfo.cxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ReFitLoop.cxx
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/G__EventDisplay.cxx
 		${CMAKE_CURRENT_SOURCE_DIR}/src/G__STL_Dictionary.cxx)
 add_library(Tracking SHARED ${SOURCES})
@@ -38,9 +40,13 @@ target_link_libraries(CRTTracking PUBLIC Tracking)
 add_executable(UpdateXT ${CMAKE_CURRENT_SOURCE_DIR}/app/UpdateXT.cxx)
 target_link_libraries(UpdateXT PUBLIC Tracking)
 
+add_executable(CRTReFit ${CMAKE_CURRENT_SOURCE_DIR}/app/CRTReFit.cxx)
+target_link_libraries(CRTReFit PUBLIC Tracking)
+
 target_compile_definitions(Tracking PRIVATE XT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/xt")
 target_compile_definitions(Tracking PRIVATE CH_MAP="${CMAKE_CURRENT_SOURCE_DIR}/ch_map")
 
 install(TARGETS CRTTracking
                 UpdateXT
+                CRTReFit
         DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin)

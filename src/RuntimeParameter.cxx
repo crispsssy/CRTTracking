@@ -5,7 +5,8 @@ namespace RuntimePar
 	//Basic information
 	std::string f_in_path("");
 	int runNum = 0;
-    bool const runMode = 1;
+    int itr_index = 0;
+    bool const runMode = 0;
 	int startEvent = 0;
 	int const nCh = 4992;
 	std::string XTMode("XYZT");
@@ -18,7 +19,7 @@ namespace RuntimePar
 	bool const numHitCut = true;
 	int const minNumHits = 12;
 	int const maxNumHits = 640;
-    double const maxDriftTime = 0;
+    double const maxDriftTime = 300;
 	//for Hough transform
 	int const maxItr = 4;
 	int const coefficient = 8; //ratio between bins of hough and fill intervals

@@ -111,7 +111,7 @@ int main(int argc, char** argv){
     TGraph* g_xt_new = new TGraph();
     g_xt_new->SetName("g_XTSimple");
     for(int i = 0; i < 50; ++i){
-        double doca = i * 0.2;
+        double doca = i * 0.1;
         double t_old = CalibInfo::Get().GetTAtR(doca);
         g_xt_old->AddPoint(doca, t_old);
         g_xt_new->AddPoint(doca, t_old + f_correction->Eval(doca));

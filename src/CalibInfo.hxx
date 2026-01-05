@@ -9,6 +9,7 @@
 #include <TGraph.h>
 #include <TGraph2D.h>
 #include <TVector3.h>
+#include <TKey.h>
 #include <Math/Minimizer.h>
 #include <Math/Factory.h>
 #include <Math/Functor.h>
@@ -33,15 +34,14 @@ private:
 	static CalibInfo* fCalibInfo;
 
     void ReadXTTable();
+    void ReadXTTableIteration(int const itr_index);
     void GenerateSimpleXT();
     void SetupMinimizer();
     double ScanAlongLambda();
     double CalculateDriftTime(double const* pars); //only for minimization usage
 
-    TGraph* fSimpleXTGraph;
-    TGraph* fSimpleResoGraph;
-    TF1* fSimpleXTFunc;
-    TF1* fSimpleResoFunc;
+    std::shared_ptr<TGraph> fSimpleXT;
+    std::shared_ptr<TGraph> fSimpleReso;
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_mean;
     std::map<int, std::shared_ptr<TGraph2D>> fGraphs_x2t_std;
     ROOT::Math::Minimizer* fFit = nullptr;
@@ -50,10 +50,6 @@ private:
     TVector3 fCurrentTrkDir;
     int fCurrentChannel;
 
-    //for simple XT
-    int const fMaxDocaIndexXT = 94;
-    int const fMaxDocaIndexReso = 74;
-    double const fdDoca = 0.1;
     //for percise XT
     double const fMaxR = 20.;
     double const nShift = 90;
