@@ -9,12 +9,13 @@
 #include <TF1.h>
 #include <TApplication.h>
 #include "CalibInfo.hxx"
+#include "Utilities.hxx"
 
 int main(int argc, char** argv){
     std::string filePath = argv[1];
     std::string outDir = argv[2];
     int const runNum = 2060;
-    int const itr_index = 0;
+    int const itr_index = FindPar(filePath, "itr");
 //    int itr_index = FindPar(filePath, "itr");
     TApplication app("app", nullptr, nullptr);
     TCanvas* c = new TCanvas();
