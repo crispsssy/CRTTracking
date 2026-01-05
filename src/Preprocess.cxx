@@ -226,6 +226,8 @@ std::shared_ptr<CDCHit> PreProcess::CheckHit(int const channel, std::vector<shor
 		}
 	}
 
+    std::shared_ptr<CDCHit> hit = std::make_shared<CDCHit>(channel);
+
     //T0 cut
 	if(fTDCCut){	
 		for(std::vector<int>::const_iterator tdc = thisTDC.begin(); tdc!= thisTDC.end(); ++tdc){
