@@ -31,7 +31,10 @@ int main(int argc, char** argv){
     TTree* t_in = f_in->Get<TTree>("t");
     
     //Draw histograms of residual
-    t_in->Draw("residual:sqrt(posCell.X()*posCell.X()+posCell.Y()*posCell.Y())>>h_res(11, 0, 5.5, 100, -50, 50)", "chi2/ndf<5", "COLZ");
+    double maxDOCA = 5.5;
+    double dDOCA = 0.5;
+    int nDOCA = maxDOCA / dDOCA;
+    t_in->Draw(Form("residual:sqrt(posCell.X()*posCell.X()+posCell.Y()*posCell.Y())>>h_res(%d, 0, %f, 100, -50, 50)", nDOCA, maxDOCA), "chi2/ndf<5", "COLZ");
     TH2D* h_res = (TH2D*)gDirectory->Get("h_res");
     if(!h_res){
         std::string msg = "Can not retrieve residual histogram";
@@ -110,11 +113,14 @@ int main(int argc, char** argv){
     TGraph* g_xt_old = new TGraph();
     TGraph* g_xt_new = new TGraph();
     g_xt_new->SetName("g_XTSimple");
-    for(int i = 0; i < 50; ++i){
+    double extrapolateDOCA = maxDOCA - dDOCA / 2;
+    double resoCorrection = g_timeResolution68->Eval(extrapolateDOCA) - CalibInfo::Get().GetTimeResolution(extrapolateDOCA);
+    for(int i = 0; i < 100; ++i){
         double doca = i * 0.1;
         double t_old = CalibInfo::Get().GetTAtR(doca);
         g_xt_old->AddPoint(doca, t_old);
         g_xt_new->AddPoint(doca, t_old + f_correction->Eval(doca));
+        if(doca > extrapolateDOCA) g_timeResolution68->AddPoint(doca, CalibInfo::Get().GetTimeResolution(doca) + resoCorrection);
     }
 
     TCanvas* c_xt = new TCanvas();
