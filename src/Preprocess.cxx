@@ -5,7 +5,6 @@ PreProcess::PreProcess(){
     fRunMode = RuntimePar::runMode;
 	fADCSumCut = RuntimePar::adcSumCut;
 	fTDCCut = RuntimePar::tdcCut;
-    fMaxDriftTime = RuntimePar::maxDriftTime;
 	fNumHitCut = RuntimePar::numHitCut;
 	fADCSumThreshold = RuntimePar::adcSumThreshold;
 	fADCSumCutAtTDC = RuntimePar::adcSumCutAtTDC;
@@ -226,17 +225,6 @@ std::shared_ptr<CDCHit> PreProcess::CheckHit(int const channel, std::vector<shor
 			return nullptr;
 		}
 	}
-
-    //Drift time cut
-    if(fMaxDriftTime != 0){
-        double driftTime = (thisTDC.at(0) - T0) * 1000 / 960;
-        if(driftTime > fMaxDriftTime){
-            if(fRunMode) std::cout<<"Abort hit at ch "<<channel<<" with drift time "<<driftTime<<" which exceeded maxDriftTime "<<fMaxDriftTime<<std::endl;
-            return nullptr;
-        }
-    }
-
-	std::shared_ptr<CDCHit> hit = std::make_shared<CDCHit>(channel);
 
     //T0 cut
 	if(fTDCCut){	
