@@ -19,6 +19,7 @@ CalibInfo& CalibInfo::Get(){
 
 CalibInfo::CalibInfo()
 {
+    std::cout<<"CalibInfo: XT itr_index is "<<itr_index<<std::endl;
     if(itr_index != 0) ReadXTTableIteration(itr_index);
     else ReadXTTable();
     SetupMinimizer();

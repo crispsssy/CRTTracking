@@ -14,7 +14,7 @@
 int main(int argc, char** argv){
     std::string filePath = argv[1];
     std::string outDir = argv[2];
-    int const runNum = 2060;
+    int const runNum = FindPar(filePath, "run");
     int const itr_index = FindPar(filePath, "itr");
 //    int itr_index = FindPar(filePath, "itr");
     TApplication app("app", nullptr, nullptr);
