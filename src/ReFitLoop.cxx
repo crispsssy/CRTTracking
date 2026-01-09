@@ -7,7 +7,7 @@ using RuntimePar::maxDriftTime;
 
 void ReFitLoop(std::string const& f_in_path, std::string const& f_out_path, int const startEvent, int const numEvent){
     //Input
-    itr_index = FindPar(f_in_path, "itr");
+    itr_index = FindPar(f_in_path, "itr") + 1;
     runNum = FindPar(f_in_path, "run");
     int eventID = 0;
     std::vector<TVector3>* trkPos_in = nullptr;

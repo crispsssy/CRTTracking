@@ -15,7 +15,7 @@ int main(int argc, char** argv){
     std::string filePath = argv[1];
     std::string outDir = argv[2];
     int const runNum = FindPar(filePath, "run");
-    int const itr_index = FindPar(filePath, "itr");
+    int const itr_index = FindPar(filePath, "itr") + 1;
 //    int itr_index = FindPar(filePath, "itr");
     TApplication app("app", nullptr, nullptr);
     TCanvas* c = new TCanvas();
