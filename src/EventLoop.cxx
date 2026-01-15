@@ -249,18 +249,22 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	f_in->Close();
 	f_out->cd();
 	t_out->Write();
+    h_preprocess->Write();
+    h_hough->Write();
 	f_out->Close();
+    
+    if(runMode == 1){
+	    TCanvas* c = new TCanvas();
+	    h_preprocess->Draw();
+	    TCanvas* c1 = new TCanvas();
+	    h_hough->Draw();
 
-	TCanvas* c = new TCanvas();
-	h_preprocess->Draw();
-	TCanvas* c1 = new TCanvas();
-	h_hough->Draw();
-
-	TCanvas* c2 = new TCanvas();
-	c2->Divide(2,1);
-	c2->cd(1);
-	h_phiDiff->Draw();
-	c2->cd(2);
-	h_dis->Draw();
+	    TCanvas* c2 = new TCanvas();
+	    c2->Divide(2,1);
+	    c2->cd(1);
+	    h_phiDiff->Draw();
+	    c2->cd(2);
+	    h_dis->Draw();
+    }
 
 }
