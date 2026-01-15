@@ -296,7 +296,7 @@ bool PreProcess::CrosstalkFilter(std::shared_ptr<CDCHit> hit){
     return filter;
 }
 
-void PreProcess::CheckNumHits(CDCHitContainer* hits){
+void PreProcess::CheckNumHits(std::shared_ptr<CDCHitContainer> hits){
 	if(fNumHitCut){
 		if(hits->size() > fMaxNumHits || hits->size() < fMinNumHits){
 //			std::cout<<hits->size()<<" hits in this event, the event will be aborted"<<std::endl;

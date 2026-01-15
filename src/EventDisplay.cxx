@@ -66,7 +66,7 @@ void EventDisplay::HighlightGraph(TVirtualPad* pad, TObject* obj, Int_t ihp, Int
 	gPad = store;
 }
 
-void EventDisplay::DrawHits(CDCHitContainer* hits, int event){
+void EventDisplay::DrawHits(std::shared_ptr<CDCHitContainer> hits, int event){
 	TCanvas* c = new TCanvas();
 	fCanvases.push_back(c);
 	c->Connect("Highlighted(TVirtualPad*, TObject*, Int_t, Int_t)", "EventDisplay", this, "HighlightGraph(TVirtualPad*, TObject*, Int_t, Int_t)");
@@ -155,18 +155,18 @@ void EventDisplay::DrawCDCZY(){
 
 void EventDisplay::DrawLineCandidates(std::shared_ptr<CDCLineCandidateContainer> lines, int event){
 	//Draw Hits
-	CDCHitContainer totalHits;
+	std::shared_ptr<CDCHitContainer> totalHits = std::make_shared<CDCHitContainer>();
 	for(auto line = lines->begin(); line != lines->end(); ++line){
-		CDCHitContainer* thisHits = (*line)->GetHits();
+		std::shared_ptr<CDCHitContainer> thisHits = (*line)->GetHits();
 		if(!thisHits){
 			std::cerr<<"Try to draw line candidates but no hits stored in candidates!!!"<<std::endl;
 			return;
 		}
 		for(auto hit = thisHits->begin(); hit != thisHits->end(); ++hit){
-			totalHits.push_back(*hit);
+			totalHits->push_back(*hit);
 		}
 	}
-	DrawHits(&totalHits, event);
+	DrawHits(totalHits, event);
 	TCanvas* c = fCanvases.back();
 	
 	//Draw lines

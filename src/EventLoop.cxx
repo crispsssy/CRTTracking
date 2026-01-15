@@ -18,7 +18,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 	short adc[4992][32];
 	int tdcDiff[4992][32];
     int tdcDiff0[48][32];
-	TFile* f_in = new TFile(f_in_path.c_str(), "READ");
+	TFile* f_in = TFile::Open(f_in_path.c_str(), "READ");
 	TTree* t_in = (TTree*)f_in->Get("RECBE");
     if(startEvent >= t_in->GetEntries()){
         std::cout<<"Start event larger than number of events in the data, abort."<<std::endl;
@@ -79,8 +79,8 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
 
 		//Pre processing and save hit information
 		int numRawHits = 0;
-		CDCHitContainer* rawHits = new CDCHitContainer();
-		CDCHitContainer* hits = new CDCHitContainer();
+		std::shared_ptr<CDCHitContainer> rawHits = std::make_shared<CDCHitContainer>();
+		std::shared_ptr<CDCHitContainer> hits = std::make_shared<CDCHitContainer>();
 		for(int iCh = 0; iCh < 4992; ++iCh){
 			if(tdcNhit[iCh] > 0){
 				++numRawHits;
@@ -194,7 +194,7 @@ void EventLoop(std::string f_in_path, std::string f_out_path, int startEvent, in
             std::vector<double> residuals;
             std::vector<TVector3> trkPos_residuals;
             std::vector<TVector3> trkDir_residuals;
-            CDCHitContainer* hits = (*track)->GetHits();
+            std::shared_ptr<CDCHitContainer> hits = (*track)->GetHits();
             std::shared_ptr<CDCLineCandidateContainer> trackResiduals = (*track)->GetTrackResidual();
             if(!trackResiduals){
                 std::cout<<"not residual found in event "<<iEvent<<", track No."<<track - tracks->begin()<<std::endl;

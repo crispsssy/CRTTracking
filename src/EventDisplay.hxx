@@ -23,7 +23,7 @@ class EventDisplay
 public:
 	~EventDisplay();
 	static EventDisplay& Get();
-	void DrawHits(CDCHitContainer* hits, int event);
+	void DrawHits(std::shared_ptr<CDCHitContainer> hits, int event);
 	void DrawCDCXY();
 	void DrawCDCZY();
 	void DrawLineCandidates(std::shared_ptr<CDCLineCandidateContainer> lines, int event);

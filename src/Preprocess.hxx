@@ -26,7 +26,7 @@ public:
 	std::shared_ptr<CDCHit> CheckHit(int const channel, std::vector<short> const& thisADC, std::vector<int> const& thisTDC);
     bool FrequencyDomainFilter(std::shared_ptr<CDCHit> hit);
     bool CrosstalkFilter(std::shared_ptr<CDCHit> hit);
-	void CheckNumHits(CDCHitContainer* hits);
+	void CheckNumHits(std::shared_ptr<CDCHitContainer> hits);
 
 private:
 	PreProcess();

@@ -27,7 +27,7 @@ HoughHandler& HoughHandler::Get(){
 	return *fHoughHandler;
 }
 
-std::shared_ptr<CDCLineCandidateContainer> HoughHandler::FindCandidates(CDCHitContainer* hits){
+std::shared_ptr<CDCLineCandidateContainer> HoughHandler::FindCandidates(std::shared_ptr<CDCHitContainer> hits){
 	TH2D* houghOdd = new TH2D("houghOdd", "Hough transform for odd layers", nbinPhi, minPhi-0.5*dPhi, maxPhi-0.5*dPhi, nbinRho, minRho, maxRho);
 	TH2D* houghEven = new TH2D("houghEven", "Hough transform for even layers", nbinPhi, minPhi-0.5*dPhi, maxPhi-0.5*dPhi, nbinRho, minRho, maxRho);
 

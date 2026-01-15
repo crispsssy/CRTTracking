@@ -19,7 +19,7 @@ public:
 	~HoughHandler();
 	static HoughHandler& Get();
 
-	std::shared_ptr<CDCLineCandidateContainer> FindCandidates(CDCHitContainer* hits);
+	std::shared_ptr<CDCLineCandidateContainer> FindCandidates(std::shared_ptr<CDCHitContainer> hits);
 	double CalculateDistance(TVector3 pos_point, TVector3 pos_line, TVector3 dir_line);
 
 private:

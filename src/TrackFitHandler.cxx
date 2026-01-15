@@ -83,11 +83,11 @@ void TrackFitHandler::ReFit(std::shared_ptr<CDCLineCandidateContainer> tracks){
 
 void TrackFitHandler::CalculateResidual(std::shared_ptr<CDCLineCandidate> track, std::shared_ptr<TrackFitMinimizerBase> fit){
     std::shared_ptr<CDCLineCandidateContainer> tracks_residual = std::make_shared<CDCLineCandidateContainer>();
-    CDCHitContainer* hits_all = track->GetHits();
+    std::shared_ptr<CDCHitContainer> hits_all = track->GetHits();
     for(auto hit = hits_all->begin(); hit != hits_all->end(); ++hit){
         int channel = (*hit)->GetChannelID();
         if(runMode) std::cout<<"Fitting track by excluding each hit to get residual, now "<<hit - hits_all->begin()<<" th hit, channel "<<channel<<std::endl;
-        CDCHitContainer* hits = new CDCHitContainer();
+        std::shared_ptr<CDCHitContainer> hits = std::make_shared<CDCHitContainer>();
         std::copy(hits_all->begin(), hit, std::back_inserter(*hits));
         std::copy(hit + 1, hits_all->end(), std::back_inserter(*hits));
         std::shared_ptr<CDCLineCandidate> track_residual = std::make_shared<CDCLineCandidate>(*track);

@@ -125,7 +125,7 @@ void ReFitLoop(std::string const& f_in_path, std::string const& f_out_path, int 
             std::vector<double> residuals;
             std::vector<TVector3> trkPos_residuals;
             std::vector<TVector3> trkDir_residuals;
-            CDCHitContainer* hits = (*track)->GetHits();
+            std::shared_ptr<CDCHitContainer> hits = (*track)->GetHits();
             std::shared_ptr<CDCLineCandidateContainer> trackResiduals = (*track)->GetTrackResidual();
             if(!trackResiduals){
                 std::cout<<"not residual found in event "<<iEvent<<", track No."<<track - tracks->begin()<<std::endl;
