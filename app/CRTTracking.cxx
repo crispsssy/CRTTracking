@@ -2,6 +2,7 @@
 #include <TApplication.h>
 #include "EventLoop.hxx"
 #include "RuntimeParameter.hxx"
+#include "Utilities.hxx"
 
 int main(int argc, char** argv){
 	if(argc < 4){
@@ -14,7 +15,7 @@ int main(int argc, char** argv){
 	int numEvent = atoi(argv[4]);
 	std::string::size_type idx = f_in_path.find("run0");
 	RuntimePar::f_in_path = f_in_path;
-	RuntimePar::runNum = stoi(f_in_path.substr(idx+4, 4));
+	RuntimePar::runNum = FindPar(f_in_path, "run");
 	RuntimePar::startEvent = startEvent;
 
 	TApplication app("app", &argc, argv);
